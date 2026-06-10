@@ -7,7 +7,7 @@ import re
 import uuid
 from datetime import UTC, datetime
 
-from sqlalchemy import delete, select
+from sqlalchemy import delete, func, select
 from sqlalchemy.orm import Session
 
 from app.core.auth_deps import check_case_access
@@ -116,14 +116,20 @@ def list_case_events(
     user: User,
     case_id: uuid.UUID,
 ) -> list[EvidenceEvent] | None:
-    """List normalized events for an accessible case."""
+    """List normalized events for an accessible case in chronological order."""
     if not check_case_access(db, user, case_id, CaseAccessLevel.viewer):
         return None
 
     stmt = (
         select(EvidenceEvent)
         .where(EvidenceEvent.case_id == case_id)
-        .order_by(EvidenceEvent.created_at.desc())
+        .order_by(
+            func.coalesce(
+                EvidenceEvent.normalized_timestamp,
+                EvidenceEvent.created_at,
+            ).asc(),
+            EvidenceEvent.created_at.asc(),
+        )
     )
     return list(db.scalars(stmt).all())
 

@@ -31,6 +31,7 @@ class EvidenceEventPublic(BaseModel):
     source_confidence: float
     provenance_pointer: str | None
     review_status: ReviewStatus
+    source_group: str | None = None
     created_at: datetime
     updated_at: datetime
 

@@ -3,6 +3,7 @@ import { Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { CaseEventsPage } from "./CaseEvents";
+import { TimelinePage } from "./Timeline";
 import { configureApiClientAuth } from "../lib/apiClient";
 import { renderWithProviders } from "../test/renderWithProviders";
 
@@ -22,39 +23,20 @@ describe("CaseEventsPage", () => {
     configureApiClientAuth(() => null);
   });
 
-  it("renders event list from API", async () => {
+  it("redirects legacy events route to timeline", async () => {
     configureApiClientAuth(() => "test-token");
     vi.stubGlobal(
       "fetch",
       vi.fn().mockResolvedValue({
         ok: true,
-        json: async () => [
-          {
-            id: "33333333-3333-3333-3333-333333333333",
-            case_id: caseId,
-            artifact_id: "44444444-4444-4444-4444-444444444444",
-            transformation_id: null,
-            structured_dataset_id: null,
-            event_type: "message_sent",
-            event_subtype: "structured_row",
-            original_timestamp_text: "Tuesday",
-            normalized_timestamp: null,
-            title: "Message from Bob",
-            description: "Hello",
-            payload_json: {},
-            source_confidence: 0.45,
-            provenance_pointer: "structured_dataset:x:row:0",
-            review_status: "pending",
-            created_at: "2026-06-11T10:00:00Z",
-            updated_at: "2026-06-11T10:00:00Z",
-          },
-        ],
+        json: async () => [],
       }),
     );
 
     renderWithProviders(
       <Routes>
         <Route path="/cases/:caseId/events" element={<CaseEventsPage />} />
+        <Route path="/cases/:caseId/timeline" element={<TimelinePage />} />
       </Routes>,
       {
         routerProps: { initialEntries: [`/cases/${caseId}/events`] },
@@ -65,7 +47,7 @@ describe("CaseEventsPage", () => {
       },
     );
 
-    expect(await screen.findByText("Message from Bob")).toBeInTheDocument();
-    expect(screen.getByText(/confidence 45%/i)).toBeInTheDocument();
+    expect(await screen.findByRole("heading", { name: /timeline/i }))
+      .toBeInTheDocument();
   });
 });
