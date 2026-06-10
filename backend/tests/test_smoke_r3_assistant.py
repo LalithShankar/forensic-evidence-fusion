@@ -68,7 +68,10 @@ def test_r3_assistant_smoke(
                 "files",
                 (
                     "payments.csv",
-                    b"sender,message,amount,date\nAlice,Transfer confirmed,50.00,2024-06-01\n",
+                    (
+                        b"sender,message,amount,date\n"
+                        b"Alice,Transfer confirmed,50.00,2024-06-01\n"
+                    ),
                     "text/csv",
                 ),
             ),
