@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-10 (Epic 8 PR in review)_
+_Last updated by: Agent on 2026-06-10 (Epic 8 merged PR #12)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -11,7 +11,7 @@ _Last updated by: Agent on 2026-06-10 (Epic 8 PR in review)_
 | 4     | Epic 5         | merged       |
 | 5     | Epic 6         | merged       |
 | 6     | Epic 7         | merged (PR #11) |
-| 7     | Epic 8         | in review      |
+| 7     | Epic 8         | merged (PR #12) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -84,18 +84,19 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 5 | #9 | Local auth MVP with JWT login and protected routes | none |
 | 2026-06-10 | 6 | #10 | Case CRUD APIs, case_memberships migration, membership-based access, case list/detail UI | none |
 | 2026-06-10 | 7 | #11 | Evidence upload API, local raw preservation + SHA-256, CaseUpload UI | none |
+| 2026-06-10 | 8 | #12 | StorageBackend abstraction, Azure/local swap, raw/readable/structured paths | none |
 
 ## Epic 8 tracker (LAL-12)
-Branch: `epic-8-blob-storage-integration` · PR in review
+Branch: `epic-8-blob-storage-integration` · Merged to main (PR #12)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 8.1 | LAL-44 | APP_ENV=local → local filesystem (or Azurite when connection string set) | ✅ | in review | pass | `StorageBackend` + factory |
-| 8.1 | LAL-44 | APP_ENV=deployed → Azure Blob backend | ✅ | in review | pass | `AzureBlobStorageBackend` |
-| 8.1 | LAL-44 | API/services use abstraction only | ✅ | in review | pass | no direct SDK in routers |
-| 8.2 | LAL-45 | Raw artifacts under raw/ namespace | ✅ | in review | pass | `storage_paths.build_object_key` |
-| 8.2 | LAL-45 | Readable path helper under readable/ namespace | ✅ | in review | pass | `StorageNamespace.readable` |
-| 8.2 | LAL-45 | Structured path helper under structured/ namespace | ✅ | in review | pass | `StorageNamespace.structured` |
+| 8.1 | LAL-44 | APP_ENV=local → local filesystem (or Azurite when connection string set) | ✅ | merged | pass | `StorageBackend` + factory |
+| 8.1 | LAL-44 | APP_ENV=deployed → Azure Blob backend | ✅ | merged | pass | `AzureBlobStorageBackend` |
+| 8.1 | LAL-44 | API/services use abstraction only | ✅ | merged | pass | no direct SDK in routers |
+| 8.2 | LAL-45 | Raw artifacts under raw/ namespace | ✅ | merged | pass | `storage_paths.build_object_key` |
+| 8.2 | LAL-45 | Readable path helper under readable/ namespace | ✅ | merged | pass | `StorageNamespace.readable` |
+| 8.2 | LAL-45 | Structured path helper under structured/ namespace | ✅ | merged | pass | `StorageNamespace.structured` |
 
 ## Epic 5 tracker (LAL-9)
 Branch: `epic-5-auth-and-user-access-mvp` · Merged to main (PR #9)
