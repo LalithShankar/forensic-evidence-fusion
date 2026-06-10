@@ -32,6 +32,7 @@ Branch: `epic-2-core-backend-app-skeleton` · PR: https://github.com/LalithShank
 | 2.1 | LAL-30 | /health returns status ok | ✅ | open | pass | `api/router.py` + TestClient |
 | 2.1 | LAL-30 | APP_ENV visible in safe non-secret response | ✅ | open | pass | no secret_key/database_url in payload |
 | 2.1 | LAL-30 | Health test passes in pytest | ✅ | open | pass | test_health.py |
+| 2.1 | LAL-30 | CORS allows local frontend origin | ✅ | open | pass | config + middleware + test_health.py |
 | 2.2 | LAL-31 | pytest runs from documented command | ✅ | open | pass | README + pyproject.toml dev extras |
 | 2.2 | LAL-31 | ruff/black/mypy report style errors | ✅ | open | pass | CI + local green |
 | 2.2 | LAL-31 | Deterministic dependency install | ✅ | open | pass | pip install -e ".[dev]" |
@@ -48,4 +49,4 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Open PR from compare link above (`gh` CLI unavailable in agent shell).
+- Epic 2 PR open; awaiting human merge approval.
