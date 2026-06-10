@@ -33,3 +33,4 @@ dist/
 user_story/
 edap-docs/
 edap-docs.zip
+*.tsbuildinfo
