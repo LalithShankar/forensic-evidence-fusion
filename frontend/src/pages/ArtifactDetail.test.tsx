@@ -34,6 +34,13 @@ const sampleArtifact = {
   collection_method: "manual_export",
   parser_class: "direct_structured",
   provenance_notes: "Exported from analyst portal.",
+  upload_batch_id: null,
+  classification_confidence: 0.72,
+  suggested_source_group: "Generic",
+  suggested_source_family: "Document",
+  suggested_artifact_type: "pdf",
+  classification_reason: "PDF file extension or MIME type",
+  blocker_notes: null,
   created_at: "2026-06-10T10:00:00Z",
   updated_at: "2026-06-10T10:00:00Z",
 };

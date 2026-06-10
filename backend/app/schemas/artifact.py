@@ -53,8 +53,32 @@ class ArtifactPublic(BaseModel):
     collection_method: str
     parser_class: str
     provenance_notes: str | None
+    upload_batch_id: uuid.UUID | None = None
+    classification_confidence: float | None = None
+    suggested_source_group: str = PROVENANCE_UNKNOWN
+    suggested_source_family: str = PROVENANCE_UNKNOWN
+    suggested_artifact_type: str = PROVENANCE_UNKNOWN
+    classification_reason: str | None = None
+    blocker_notes: str | None = None
     created_at: datetime
     updated_at: datetime
+
+
+class BulkUploadItemPublic(BaseModel):
+    """Per-file outcome from a bulk upload request."""
+
+    filename: str
+    artifact: ArtifactPublic | None = None
+    error: str | None = None
+
+
+class BulkUploadResponse(BaseModel):
+    """Aggregate response for bulk artifact upload."""
+
+    upload_batch_id: uuid.UUID
+    results: list[BulkUploadItemPublic]
+    succeeded_count: int
+    failed_count: int
 
 
 class ArtifactUploadError(BaseModel):

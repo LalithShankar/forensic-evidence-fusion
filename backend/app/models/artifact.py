@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text
+from sqlalchemy import BigInteger, DateTime, Float, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Uuid
 
@@ -15,12 +15,15 @@ from app.models.base import TimestampMixin, UUIDPrimaryKeyMixin
 
 
 class ArtifactStatus(enum.StrEnum):
-    """Lifecycle status for raw artifact preservation."""
+    """Lifecycle status for raw artifact preservation and review."""
 
     pending = "pending"
     preserved = "preserved"
     failed = "failed"
     blocked = "blocked"
+    needs_review = "needs_review"
+    ready_for_transformation = "ready_for_transformation"
+    preserve_only = "preserve_only"
 
 
 PROVENANCE_UNKNOWN = "unknown"
@@ -86,3 +89,28 @@ class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         default=PROVENANCE_UNKNOWN,
     )
     provenance_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
+    upload_batch_id: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        nullable=True,
+    )
+    classification_confidence: Mapped[float | None] = mapped_column(
+        Float,
+        nullable=True,
+    )
+    suggested_source_group: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    suggested_source_family: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    suggested_artifact_type: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    classification_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
+    blocker_notes: Mapped[str | None] = mapped_column(Text, nullable=True)

@@ -91,14 +91,11 @@ def test_manifest_required_fields_populated_with_defaults(
         headers=auth_header(token),
     ).json()
     entry = manifest["artifacts"][0]
-    for field in (
-        "source_group",
-        "source_family",
-        "artifact_type",
-        "collection_method",
-        "parser_class",
-    ):
-        assert entry[field] == PROVENANCE_UNKNOWN
+    assert entry["source_group"] == "Generic"
+    assert entry["source_family"] == "Tabular"
+    assert entry["artifact_type"] == "csv"
+    assert entry["collection_method"] == PROVENANCE_UNKNOWN
+    assert entry["parser_class"] == PROVENANCE_UNKNOWN
     assert entry["storage_path"]
     assert entry["status"] == ArtifactStatus.preserved.value
     assert entry["content_hash"] is not None

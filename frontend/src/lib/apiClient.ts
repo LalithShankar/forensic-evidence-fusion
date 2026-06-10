@@ -58,7 +58,10 @@ export type ArtifactStatus =
   | "pending"
   | "preserved"
   | "failed"
-  | "blocked";
+  | "blocked"
+  | "needs_review"
+  | "ready_for_transformation"
+  | "preserve_only";
 
 export interface ArtifactMetadataInput {
   source_group?: string;
@@ -86,8 +89,28 @@ export interface ArtifactPublic {
   collection_method: string;
   parser_class: string;
   provenance_notes: string | null;
+  upload_batch_id: string | null;
+  classification_confidence: number | null;
+  suggested_source_group: string;
+  suggested_source_family: string;
+  suggested_artifact_type: string;
+  classification_reason: string | null;
+  blocker_notes: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface BulkUploadItemPublic {
+  filename: string;
+  artifact: ArtifactPublic | null;
+  error: string | null;
+}
+
+export interface BulkUploadResponse {
+  upload_batch_id: string;
+  results: BulkUploadItemPublic[];
+  succeeded_count: number;
+  failed_count: number;
 }
 
 export interface ValidationErrorDetail {
@@ -125,6 +148,10 @@ export interface ApiClient {
     file: File,
     metadata?: ArtifactMetadataInput,
   ) => Promise<ArtifactPublic>;
+  bulkUploadArtifacts: (
+    caseId: string,
+    files: File[],
+  ) => Promise<BulkUploadResponse>;
 }
 
 type TokenProvider = () => string | null;
@@ -335,6 +362,53 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     return response.json() as Promise<ArtifactPublic>;
   }
 
+  async function bulkUploadArtifacts(
+    caseId: string,
+    files: File[],
+  ): Promise<BulkUploadResponse> {
+    const formData = new FormData();
+    for (const file of files) {
+      formData.append("files", file);
+    }
+
+    const headers = new Headers();
+    const token = tokenProvider();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const response = await fetch(
+      `${baseUrl}/cases/${caseId}/artifacts/bulk-upload`,
+      {
+        method: "POST",
+        headers,
+        body: formData,
+      },
+    );
+
+    if (response.status === 401 && token) {
+      unauthorizedHandler?.();
+    }
+
+    if (!response.ok) {
+      let detail: string | ValidationErrorDetail[] =
+        `Request failed: ${response.status}`;
+      try {
+        const body = (await response.json()) as {
+          detail?: string | ValidationErrorDetail[];
+        };
+        if (body.detail !== undefined) {
+          detail = body.detail;
+        }
+      } catch {
+        // Keep generic detail when the body is not JSON.
+      }
+      throw new ApiRequestError(response.status, detail);
+    }
+
+    return response.json() as Promise<BulkUploadResponse>;
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -348,6 +422,7 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     listArtifacts,
     getArtifact,
     uploadArtifact,
+    bulkUploadArtifacts,
   };
 }
 

@@ -16,6 +16,7 @@ from app.models.case_membership import CaseAccessLevel
 from app.models.user import User
 from app.schemas.artifact import ArtifactMetadataInput, resolve_provenance_field
 from app.services.audit_service import write_audit_log
+from app.services.classification_service import classify_artifact
 from app.services.storage_service import StorageBackend, StorageError
 
 
@@ -68,6 +69,7 @@ def upload_artifact(
     content: bytes,
     storage: StorageBackend,
     metadata: ArtifactMetadataInput | None = None,
+    upload_batch_id: uuid.UUID | None = None,
 ) -> Artifact | None:
     """Upload and preserve a raw artifact for an authorized case contributor."""
     if not check_case_access(db, user, case_id, CaseAccessLevel.contributor):
@@ -97,6 +99,7 @@ def upload_artifact(
         collection_method=resolve_provenance_field(meta.collection_method),
         parser_class=resolve_provenance_field(meta.parser_class),
         provenance_notes=meta.provenance_notes,
+        upload_batch_id=upload_batch_id,
     )
     db.add(artifact)
     db.flush()
@@ -116,7 +119,7 @@ def upload_artifact(
 
     artifact.storage_path = storage_path
     artifact.content_hash = content_hash
-    artifact.status = ArtifactStatus.preserved
+    _apply_post_preserve_classification(artifact)
     db.commit()
     db.refresh(artifact)
 
@@ -130,6 +133,40 @@ def upload_artifact(
         after_json=_artifact_snapshot(artifact),
     )
     return artifact
+
+
+def _apply_post_preserve_classification(artifact: Artifact) -> None:
+    """Classify artifact after preservation when not part of a bulk batch."""
+    if artifact.upload_batch_id is not None:
+        artifact.status = ArtifactStatus.preserved
+        return
+
+    result = classify_artifact(
+        original_filename=artifact.original_filename,
+        file_extension=artifact.file_extension,
+        mime_type=artifact.mime_type,
+    )
+    artifact.suggested_source_group = result.source_group
+    artifact.suggested_source_family = result.source_family
+    artifact.suggested_artifact_type = result.artifact_type
+    artifact.classification_confidence = result.confidence
+    artifact.classification_reason = result.reason
+
+    user_provided = (
+        artifact.source_group != PROVENANCE_UNKNOWN
+        or artifact.source_family != PROVENANCE_UNKNOWN
+        or artifact.artifact_type != PROVENANCE_UNKNOWN
+    )
+
+    if user_provided:
+        artifact.status = ArtifactStatus.preserved
+    elif result.needs_review:
+        artifact.status = ArtifactStatus.needs_review
+    else:
+        artifact.source_group = result.source_group
+        artifact.source_family = result.source_family
+        artifact.artifact_type = result.artifact_type
+        artifact.status = ArtifactStatus.preserved
 
 
 def _artifact_snapshot(artifact: Artifact) -> dict[str, Any]:
@@ -151,4 +188,12 @@ def _artifact_snapshot(artifact: Artifact) -> dict[str, Any]:
         "collection_method": artifact.collection_method or PROVENANCE_UNKNOWN,
         "parser_class": artifact.parser_class or PROVENANCE_UNKNOWN,
         "provenance_notes": artifact.provenance_notes,
+        "upload_batch_id": (
+            str(artifact.upload_batch_id) if artifact.upload_batch_id else None
+        ),
+        "classification_confidence": artifact.classification_confidence,
+        "suggested_source_group": artifact.suggested_source_group,
+        "suggested_source_family": artifact.suggested_source_family,
+        "suggested_artifact_type": artifact.suggested_artifact_type,
+        "classification_reason": artifact.classification_reason,
     }

@@ -13,6 +13,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
+import { ClassificationBadge } from "../components/artifacts/ClassificationBadge";
+import { BulkUpload } from "../components/upload/BulkUpload";
 import { useAuth } from "../context/AuthContext";
 import {
   ApiRequestError,
@@ -37,6 +39,33 @@ function formatStatus(status: ArtifactPublic["status"]): string {
 
 function formatProvenance(value: string): string {
   return value === "unknown" ? "Unknown" : value.replace(/_/g, " ");
+}
+
+interface ArtifactGroup {
+  key: string;
+  batchLabel: string | null;
+  items: ArtifactPublic[];
+}
+
+function groupArtifactsByBatch(artifacts: ArtifactPublic[]): ArtifactGroup[] {
+  const groups = new Map<string, ArtifactPublic[]>();
+  for (const artifact of artifacts) {
+    const key = artifact.upload_batch_id ?? `single-${artifact.id}`;
+    const existing = groups.get(key) ?? [];
+    existing.push(artifact);
+    groups.set(key, existing);
+  }
+
+  return Array.from(groups.entries()).map(([key, items]) => {
+    const batchId = items[0]?.upload_batch_id;
+    return {
+      key,
+      batchLabel: batchId
+        ? `Batch ${batchId.slice(0, 8)}… (${items.length} file${items.length === 1 ? "" : "s"})`
+        : null,
+      items,
+    };
+  });
 }
 
 export function CaseUploadPage() {
@@ -213,6 +242,8 @@ export function CaseUploadPage() {
         </form>
       </Box>
 
+      <BulkUpload caseId={caseId} />
+
       <Box as="section" aria-label="Uploaded artifacts">
         <Heading size="md" mb={4}>
           Artifacts in this case
@@ -226,33 +257,48 @@ export function CaseUploadPage() {
         )}
         {artifactsQuery.data && artifactsQuery.data.length > 0 && (
           <Stack gap={3}>
-            {artifactsQuery.data.map((artifact) => (
-              <Box
-                key={artifact.id}
-                borderWidth="1px"
-                borderRadius="md"
-                p={4}
-              >
-                <Link asChild fontWeight="semibold">
-                  <RouterLink
-                    to={`/cases/${caseId}/artifacts/${artifact.id}`}
-                  >
-                    {artifact.original_filename}
-                  </RouterLink>
-                </Link>
-                <Text fontSize="sm" color="gray.600">
-                  {artifact.mime_type} · {artifact.file_size_bytes} bytes ·{" "}
-                  {formatStatus(artifact.status)}
-                </Text>
-                <Text fontSize="sm" color="gray.600">
-                  Source: {formatProvenance(artifact.source_group)} /{" "}
-                  {formatProvenance(artifact.source_family)}
-                </Text>
-                {artifact.uploaded_at && (
-                  <Text fontSize="sm" color="gray.600">
-                    Uploaded {new Date(artifact.uploaded_at).toLocaleString()}
+            {groupArtifactsByBatch(artifactsQuery.data).map((group) => (
+              <Box key={group.key}>
+                {group.batchLabel && (
+                  <Text fontSize="sm" fontWeight="semibold" mb={2} color="gray.700">
+                    {group.batchLabel}
                   </Text>
                 )}
+                <Stack gap={3}>
+                  {group.items.map((artifact) => (
+                    <Box
+                      key={artifact.id}
+                      borderWidth="1px"
+                      borderRadius="md"
+                      p={4}
+                    >
+                      <Link asChild fontWeight="semibold">
+                        <RouterLink
+                          to={`/cases/${caseId}/artifacts/${artifact.id}`}
+                        >
+                          {artifact.original_filename}
+                        </RouterLink>
+                      </Link>
+                      <Text fontSize="sm" color="gray.600">
+                        {artifact.mime_type} · {artifact.file_size_bytes} bytes ·{" "}
+                        {formatStatus(artifact.status)}
+                      </Text>
+                      <Text fontSize="sm" color="gray.600">
+                        Source: {formatProvenance(artifact.source_group)} /{" "}
+                        {formatProvenance(artifact.source_family)}
+                      </Text>
+                      <Box mt={1}>
+                        <ClassificationBadge artifact={artifact} />
+                      </Box>
+                      {artifact.uploaded_at && (
+                        <Text fontSize="sm" color="gray.600" mt={1}>
+                          Uploaded{" "}
+                          {new Date(artifact.uploaded_at).toLocaleString()}
+                        </Text>
+                      )}
+                    </Box>
+                  ))}
+                </Stack>
               </Box>
             ))}
           </Stack>
