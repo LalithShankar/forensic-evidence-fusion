@@ -79,6 +79,14 @@ class Settings(BaseSettings):
         default="2024-02-15-preview",
         alias="AZURE_OPENAI_API_VERSION",
     )
+    applicationinsights_connection_string: str | None = Field(
+        default=None,
+        alias="APPLICATIONINSIGHTS_CONNECTION_STRING",
+    )
+
+    @property
+    def applicationinsights_configured(self) -> bool:
+        return bool(self.applicationinsights_connection_string)
 
     @property
     def azure_search_configured(self) -> bool:

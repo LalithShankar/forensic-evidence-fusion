@@ -83,6 +83,17 @@ def test_cors_allowed_origins_parse_comma_separated_env(
     ]
 
 
+def test_applicationinsights_configured_when_set(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        "APPLICATIONINSIGHTS_CONNECTION_STRING",
+        "InstrumentationKey=test-key",
+    )
+    settings = LocalSettings()
+    assert settings.applicationinsights_configured is True
+
+
 def test_get_settings_respects_app_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APP_ENV", "deployed")
     monkeypatch.setenv("AZURE_KEY_VAULT_URL", "https://example.vault.azure.net/")

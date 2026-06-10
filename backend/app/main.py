@@ -10,7 +10,8 @@ from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
-from app.core.config import get_settings
+from app.core.config import get_settings, reset_settings_cache
+from app.core.keyvault import apply_keyvault_secrets
 from app.core.logging import (
     bind_log_context,
     clear_log_context,
@@ -18,6 +19,11 @@ from app.core.logging import (
     get_logger,
 )
 from app.db.session import dispose_engine, init_db_connection
+
+_bootstrap_settings = get_settings()
+if _bootstrap_settings.is_deployed:
+    apply_keyvault_secrets(_bootstrap_settings)
+    reset_settings_cache()
 
 settings = get_settings()
 configure_logging(settings.log_level)
