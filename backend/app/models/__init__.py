@@ -1,0 +1,8 @@
+"""ORM models registered on shared metadata for Alembic autogenerate."""
+
+from app.models.artifact import Artifact
+from app.models.audit import AuditLog
+from app.models.case import Case
+from app.models.user import User
+
+__all__ = ["Artifact", "AuditLog", "Case", "User"]

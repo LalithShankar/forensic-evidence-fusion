@@ -3,7 +3,8 @@
 from __future__ import annotations
 
 import uuid
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable
+from contextlib import asynccontextmanager
 
 from fastapi import FastAPI, Request, Response
 from fastapi.middleware.cors import CORSMiddleware
@@ -16,11 +17,21 @@ from app.core.logging import (
     configure_logging,
     get_logger,
 )
+from app.db.session import dispose_engine, init_db_connection
 
 settings = get_settings()
 configure_logging(settings.log_level)
 
-app = FastAPI(title=settings.app_name)
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    """Initialize shared resources on startup and release them on shutdown."""
+    init_db_connection(settings)
+    yield
+    dispose_engine()
+
+
+app = FastAPI(title=settings.app_name, lifespan=lifespan)
 request_logger = get_logger("app.request")
 
 app.add_middleware(
