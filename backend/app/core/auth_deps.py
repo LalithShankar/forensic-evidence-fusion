@@ -9,6 +9,7 @@ from typing import Annotated
 import jwt
 from fastapi import Depends, HTTPException, Request, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.auth_provider import LocalAuthProvider
@@ -16,6 +17,11 @@ from app.core.config import Settings, get_settings
 from app.core.logging import bind_log_context
 from app.core.security import decode_access_token
 from app.db.session import get_db
+from app.models.case_membership import (
+    ACCESS_LEVEL_RANK,
+    CaseAccessLevel,
+    CaseMembership,
+)
 from app.models.user import User, UserRole, UserStatus
 
 security = HTTPBearer(auto_error=False)
@@ -23,13 +29,32 @@ auth_provider = LocalAuthProvider()
 
 
 def check_case_access(
+    db: Session,
     user: User,
     case_id: uuid.UUID,
-    min_level: str = "viewer",
+    min_level: CaseAccessLevel = CaseAccessLevel.viewer,
 ) -> bool:
-    """Permissive stub until Epic 6 implements case_memberships."""
-    _ = case_id, min_level
-    return user.status == UserStatus.active
+    """Return True when the user meets the minimum case access level.
+
+    Admin users may access all cases. Disabled users are always denied.
+    """
+    if user.status == UserStatus.disabled:
+        return False
+    if user.role == UserRole.admin:
+        return True
+
+    membership = db.scalar(
+        select(CaseMembership).where(
+            CaseMembership.case_id == case_id,
+            CaseMembership.user_id == user.id,
+        )
+    )
+    if membership is None:
+        return False
+
+    required_rank = ACCESS_LEVEL_RANK[min_level]
+    actual_rank = ACCESS_LEVEL_RANK[membership.access_level]
+    return actual_rank >= required_rank
 
 
 def get_current_user(

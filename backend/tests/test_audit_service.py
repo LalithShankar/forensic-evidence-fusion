@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.core.security import hash_password
 from app.models import AuditLog, Case, User
+from app.models.case import CaseScenarioType
 from app.services.audit_service import write_audit_log
 
 
@@ -17,8 +18,15 @@ def test_write_audit_log_persists_acting_user_and_target(db_session: Session) ->
         display_name="Audit User",
         password_hash=hash_password("DevPassword123!"),
     )
-    case = Case()
-    db_session.add_all([user, case])
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    case = Case(
+        name="Audit Case",
+        scenario_type=CaseScenarioType.general_investigation,
+        created_by=user.id,
+    )
+    db_session.add(case)
     db_session.commit()
 
     target_id = uuid.uuid4()

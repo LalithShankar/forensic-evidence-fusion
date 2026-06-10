@@ -8,7 +8,8 @@ _Last updated by: Hybrid EDAP dispatch on 2026-06-10_
 | 1     | Epic 1         | merged       |
 | 2     | Epic 2, Epic 3 | merged       |
 | 3     | Epic 4         | merged       |
-| 4     | Epic 5         | **in review** — PR open, CI pending |
+| 4     | Epic 5         | merged       |
+| 5     | Epic 6         | **in review** — PR open, CI pending |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -80,17 +81,34 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 4 | #6 | SQLAlchemy session, Alembic migrations, placeholder models, audit_log | none |
 
 ## Epic 5 tracker (LAL-9)
-Branch: `epic-5-auth-and-user-access-mvp` · pushed; **PR pending** · QA pass (local)
+Branch: `epic-5-auth-and-user-access-mvp` · Merged to main (PR #9)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 5.1 | LAL-38 | Valid login returns JWT session | ✅ | open | pass | `POST /auth/login` + `auth_service.py` |
-| 5.1 | LAL-38 | Invalid credentials denied safely | ✅ | open | pass | generic 401 message |
-| 5.1 | LAL-38 | Unauthenticated protected routes return 401 | ✅ | open | pass | `/auth/me`, `/auth/protected/ping` |
-| 5.2 | LAL-39 | User model has role/status fields | ✅ | open | pass | `UserRole`, `UserStatus` enums |
-| 5.2 | LAL-39 | Protected endpoints resolve current user | ✅ | open | pass | `get_current_user` dependency |
-| 5.2 | LAL-39 | User ID attachable for audit/logging | ✅ | open | pass | `bind_log_context` + `request.state.user_id` |
+| 5.1 | LAL-38 | Valid login returns JWT session | ✅ | merged | pass | `POST /auth/login` + `auth_service.py` |
+| 5.1 | LAL-38 | Invalid credentials denied safely | ✅ | merged | pass | generic 401 message |
+| 5.1 | LAL-38 | Unauthenticated protected routes return 401 | ✅ | merged | pass | `/auth/me`, `/auth/protected/ping` |
+| 5.2 | LAL-39 | User model has role/status fields | ✅ | merged | pass | `UserRole`, `UserStatus` enums |
+| 5.2 | LAL-39 | Protected endpoints resolve current user | ✅ | merged | pass | `get_current_user` dependency |
+| 5.2 | LAL-39 | User ID attachable for audit/logging | ✅ | merged | pass | `bind_log_context` + `request.state.user_id` |
+
+## Epic 6 tracker (LAL-10)
+Branch: `epic-6-case-management` · pushed; **PR pending** · QA pass (local)
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 6.1 | LAL-40 | Authenticated create saves case with created_by + timestamps | ✅ | open | pass | `POST /cases` + manager membership |
+| 6.1 | LAL-40 | Case list shows only accessible cases (membership-based) | ✅ | open | pass | `list_accessible_cases` + tests |
+| 6.1 | LAL-40 | Invalid input returns validation errors (API 422; form shows errors) | ✅ | open | pass | `test_cases.py` + `Cases.test.tsx` |
+| 6.2 | LAL-41 | Detail page shows name, description, scenario type, date range | ✅ | open | pass | `CaseDetail.tsx` + `GET /cases/{id}` |
+| 6.2 | LAL-41 | Save updates allowed fields; updated_at changes; values persist | ✅ | open | pass | `PATCH /cases/{id}` + audit `case.updated` |
+| 6.2 | LAL-41 | Missing/inaccessible case → safe not-found state (no info leak) | ✅ | open | pass | 404 for missing + no membership |
+
+## Change log (Epic 6 — pending merge)
+| Date | Epic | PR | Summary of changes | Conflicts resolved |
+|------|------|----|--------------------|--------------------|
+| 2026-06-10 | 6 | pending | Case CRUD APIs, case_memberships migration, membership-based access, case list/detail UI | none |
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- **Epic 5 (LAL-9):** PR open — awaiting Manager review and CI green.
+- **Epic 6 (LAL-10):** PR open — awaiting Manager review and CI green.

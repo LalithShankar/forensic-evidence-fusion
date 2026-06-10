@@ -2,6 +2,8 @@ import { Route, Routes } from "react-router-dom";
 
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { AppLayout } from "./components/layout/AppLayout";
+import { CaseDetailPage } from "./pages/CaseDetail";
+import { CasesPage } from "./pages/Cases";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/Login";
 import { NotFoundPage } from "./pages/NotFoundPage";
@@ -13,6 +15,8 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="cases" element={<CasesPage />} />
+          <Route path="cases/:caseId" element={<CaseDetailPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>

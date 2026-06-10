@@ -65,7 +65,13 @@ def test_alembic_upgrade_creates_schema(sqlite_database_url: str) -> None:
     inspector = inspect(engine)
     tables = set(inspector.get_table_names())
 
-    assert {"users", "cases", "artifacts", "audit_log"}.issubset(tables)
+    assert {
+        "users",
+        "cases",
+        "case_memberships",
+        "artifacts",
+        "audit_log",
+    }.issubset(tables)
     dispose_engine()
 
 

@@ -21,6 +21,9 @@ export function AppLayout() {
                 <Link asChild variant="plain">
                   <RouterLink to="/">Dashboard</RouterLink>
                 </Link>
+                <Link asChild variant="plain">
+                  <RouterLink to="/cases">Cases</RouterLink>
+                </Link>
               </Flex>
             </Flex>
             {user && (

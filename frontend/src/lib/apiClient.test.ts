@@ -1,8 +1,10 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import {
+  ApiRequestError,
   configureApiClientAuth,
   createApiClient,
+  formatValidationErrors,
 } from "./apiClient";
 
 describe("createApiClient", () => {
@@ -107,6 +109,38 @@ describe("createApiClient", () => {
     );
     const headers = fetchMock.mock.calls[0][1].headers as Headers;
     expect(headers.get("Authorization")).toBe("Bearer test-token");
+  });
+
+  it("throws ApiRequestError with validation detail on 422 responses", async () => {
+    configureApiClientAuth(() => "test-token");
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: false,
+        status: 422,
+        json: async () => ({
+          detail: [{ loc: ["body", "name"], msg: "Field required", type: "missing" }],
+        }),
+      }),
+    );
+
+    const client = createApiClient({
+      appEnv: "local",
+      apiBaseUrl: "http://localhost:8000",
+    });
+
+    try {
+      await client.createCase({
+        name: "",
+        scenario_type: "general_investigation",
+      });
+      throw new Error("Expected createCase to fail");
+    } catch (error) {
+      expect(error).toBeInstanceOf(ApiRequestError);
+      expect(
+        formatValidationErrors((error as ApiRequestError).detail),
+      ).toContain("name:");
+    }
   });
 
   it("calls unauthorized handler on 401 responses", async () => {
