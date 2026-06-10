@@ -1,11 +1,11 @@
 # Project Status
 
-_Last updated by: EDAP pipeline (Epic 2 Builder/QA) on 2026-06-10_
+_Last updated by: EDAP pipeline (Builder/Review/Integration/QA) on 2026-06-10_
 
 ## Batch plan
 | Batch | Epics          | State        |
 |-------|----------------|--------------|
-| 1     | Epic 1, Epic 2 | in progress  |
+| 1     | Epic 1, Epic 2 | Epic 1 merged · Epic 2 in review  |
 | 2     | Epic 3         | blocked (needs 1,2) |
 
 ## Epic 1 tracker (LAL-5)
@@ -49,4 +49,4 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Epic 2 PR open; awaiting human merge approval.
+- Open Epic 2 PR from [compare link](https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-2-core-backend-app-skeleton) (`gh` not authenticated in agent shell; branch pushed).
