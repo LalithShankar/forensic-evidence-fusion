@@ -54,6 +54,27 @@ export interface CaseUpdateInput {
   date_range_end?: string | null;
 }
 
+export type ArtifactStatus =
+  | "pending"
+  | "preserved"
+  | "failed"
+  | "blocked";
+
+export interface ArtifactPublic {
+  id: string;
+  case_id: string;
+  original_filename: string;
+  file_size_bytes: number;
+  file_extension: string;
+  mime_type: string;
+  uploaded_by: string | null;
+  uploaded_at: string | null;
+  content_hash: string | null;
+  status: ArtifactStatus;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -82,6 +103,9 @@ export interface ApiClient {
   createCase: (input: CaseCreateInput) => Promise<CasePublic>;
   getCase: (caseId: string) => Promise<CasePublic>;
   updateCase: (caseId: string, input: CaseUpdateInput) => Promise<CasePublic>;
+  listArtifacts: (caseId: string) => Promise<ArtifactPublic[]>;
+  getArtifact: (caseId: string, artifactId: string) => Promise<ArtifactPublic>;
+  uploadArtifact: (caseId: string, file: File) => Promise<ArtifactPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -215,6 +239,64 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     });
   }
 
+  async function listArtifacts(caseId: string): Promise<ArtifactPublic[]> {
+    return request<ArtifactPublic[]>(`/cases/${caseId}/artifacts`);
+  }
+
+  async function getArtifact(
+    caseId: string,
+    artifactId: string,
+  ): Promise<ArtifactPublic> {
+    return request<ArtifactPublic>(
+      `/cases/${caseId}/artifacts/${artifactId}`,
+    );
+  }
+
+  async function uploadArtifact(
+    caseId: string,
+    file: File,
+  ): Promise<ArtifactPublic> {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    const headers = new Headers();
+    const token = tokenProvider();
+    if (token) {
+      headers.set("Authorization", `Bearer ${token}`);
+    }
+
+    const response = await fetch(
+      `${baseUrl}/cases/${caseId}/artifacts/upload`,
+      {
+        method: "POST",
+        headers,
+        body: formData,
+      },
+    );
+
+    if (response.status === 401 && token) {
+      unauthorizedHandler?.();
+    }
+
+    if (!response.ok) {
+      let detail: string | ValidationErrorDetail[] =
+        `Request failed: ${response.status}`;
+      try {
+        const body = (await response.json()) as {
+          detail?: string | ValidationErrorDetail[];
+        };
+        if (body.detail !== undefined) {
+          detail = body.detail;
+        }
+      } catch {
+        // Keep generic detail when the body is not JSON.
+      }
+      throw new ApiRequestError(response.status, detail);
+    }
+
+    return response.json() as Promise<ArtifactPublic>;
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -225,6 +307,9 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     createCase,
     getCase,
     updateCase,
+    listArtifacts,
+    getArtifact,
+    uploadArtifact,
   };
 }
 

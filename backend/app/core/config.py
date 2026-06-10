@@ -38,6 +38,7 @@ class Settings(BaseSettings):
         default="http://localhost:5173",
         alias="CORS_ALLOWED_ORIGINS",
     )
+    data_root: str = Field(default="./data", alias="DATA_ROOT")
 
     @property
     def cors_origins_list(self) -> list[str]:

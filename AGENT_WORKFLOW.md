@@ -1,5 +1,9 @@
 # Agent Workflow — Epic-Driven Agent Pipeline (EDAP)
 
+> **Solo Manager (default):** use Fast Track — one agent, one PR, merge on CI green.
+> See `docs/agent-prompts/FAST_TRACK.md` and `docs/agent-prompts/epic_one_shot_builder.md`.
+> Full multi-role EDAP below is optional unless you want separate Review / QA passes.
+
 ## Goal
 Build this project epic by epic using AI agents, with a human review gate at
 every step. The human is the Manager. Agents do the building; nothing merges

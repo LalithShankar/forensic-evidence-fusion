@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: EDAP agent on 2026-06-10 (Epic 6 merged)_
+_Last updated by: Fast Track agent on 2026-06-10 (Epic 7 PR pending)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -10,6 +10,7 @@ _Last updated by: EDAP agent on 2026-06-10 (Epic 6 merged)_
 | 3     | Epic 4         | merged       |
 | 4     | Epic 5         | merged       |
 | 5     | Epic 6         | merged       |
+| 6     | Epic 7         | **in review** — pushed `b8ab586`, open PR |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -105,6 +106,18 @@ Branch: `epic-6-case-management` · Merged to main (PR #10) · QA pass
 | 6.2 | LAL-41 | Detail page shows name, description, scenario type, date range | ✅ | merged | pass | `CaseDetail.tsx` + `GET /cases/{id}` |
 | 6.2 | LAL-41 | Save updates allowed fields; updated_at changes; values persist | ✅ | merged | pass | `PATCH /cases/{id}` + audit `case.updated` |
 | 6.2 | LAL-41 | Missing/inaccessible case → safe not-found state (no info leak) | ✅ | merged | pass | 404 for missing + no membership |
+
+## Epic 7 tracker (LAL-11)
+Branch: `epic-7-evidence-upload-and-raw-preservation` · commit `b8ab586` pushed · QA pass (local) · PR: open manually (gh CLI unavailable)
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 7.1 | LAL-42 | Upload supported file → Artifact record created | ✅ | pending | pass | `POST /cases/{id}/artifacts/upload` |
+| 7.1 | LAL-42 | Metadata: filename, size, extension, MIME, uploader, upload time | ✅ | pending | pass | `ArtifactPublic` + tests |
+| 7.1 | LAL-42 | Upload failure → no fake completed artifact | ✅ | pending | pass | 400/500; failed status not preserved |
+| 7.2 | LAL-43 | Original file stored unchanged on disk | ✅ | pending | pass | `storage_service.preserve_raw` |
+| 7.2 | LAL-43 | SHA-256 hash stored when preservation completes | ✅ | pending | pass | `content_hash` on artifact |
+| 7.2 | LAL-43 | Preservation failure → status failed/blocked, not completed | ✅ | pending | pass | `test_preservation_failure_marks_artifact_failed` |
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
