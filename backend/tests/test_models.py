@@ -8,6 +8,7 @@ from sqlalchemy.orm import Session
 
 from app.db.base import Base
 from app.models import Artifact, AuditLog, Case, User
+from app.models.artifact import ArtifactStatus
 from app.models.case import CaseScenarioType
 
 
@@ -44,7 +45,14 @@ def test_placeholder_models_have_ids_and_timestamps(db_session: Session) -> None
     db_session.refresh(user)
     db_session.refresh(case)
 
-    artifact = Artifact(case_id=case.id)
+    artifact = Artifact(
+        case_id=case.id,
+        original_filename="placeholder.bin",
+        file_size_bytes=0,
+        file_extension="bin",
+        mime_type="application/octet-stream",
+        status=ArtifactStatus.pending,
+    )
     db_session.add(artifact)
     db_session.commit()
     db_session.refresh(artifact)
