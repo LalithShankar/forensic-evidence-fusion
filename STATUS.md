@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-10 (Epic 8 merged PR #12)_
+_Last updated by: Agent on 2026-06-10 (Epic 9 in review)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -12,6 +12,7 @@ _Last updated by: Agent on 2026-06-10 (Epic 8 merged PR #12)_
 | 5     | Epic 6         | merged       |
 | 6     | Epic 7         | merged (PR #11) |
 | 7     | Epic 8         | merged (PR #12) |
+| 8     | Epic 9         | in review       |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -85,6 +86,18 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 6 | #10 | Case CRUD APIs, case_memberships migration, membership-based access, case list/detail UI | none |
 | 2026-06-10 | 7 | #11 | Evidence upload API, local raw preservation + SHA-256, CaseUpload UI | none |
 | 2026-06-10 | 8 | #12 | StorageBackend abstraction, Azure/local swap, raw/readable/structured paths | none |
+
+## Epic 9 tracker (LAL-13)
+Branch: `epic-9-artifact-manifest-and-metadata` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 9.1 | LAL-46 | Upload stores source_group, source_family, artifact_type, collection_method, parser_class | ⏳ | pending | pending | multipart form + migration 005 |
+| 9.1 | LAL-46 | Omitted metadata → safe defaults (unknown) | ⏳ | pending | pending | `resolve_provenance_field` |
+| 9.1 | LAL-46 | Artifact detail shows provenance_notes | ⏳ | pending | pending | `ArtifactDetailPage` |
+| 9.2 | LAL-47 | Manifest lists id, case_id, storage_path, status, hash, metadata | ⏳ | pending | pending | `GET /cases/{id}/artifacts/manifest` |
+| 9.2 | LAL-47 | Manifest reflects current status/metadata | ⏳ | pending | pending | `build_case_manifest` |
+| 9.2 | LAL-47 | Tests: required provenance fields never null | ⏳ | pending | pending | `test_manifest_service.py` |
 
 ## Epic 8 tracker (LAL-12)
 Branch: `epic-8-blob-storage-integration` · Merged to main (PR #12)

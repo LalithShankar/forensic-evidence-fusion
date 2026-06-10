@@ -60,6 +60,15 @@ export type ArtifactStatus =
   | "failed"
   | "blocked";
 
+export interface ArtifactMetadataInput {
+  source_group?: string;
+  source_family?: string;
+  artifact_type?: string;
+  collection_method?: string;
+  parser_class?: string;
+  provenance_notes?: string;
+}
+
 export interface ArtifactPublic {
   id: string;
   case_id: string;
@@ -71,6 +80,12 @@ export interface ArtifactPublic {
   uploaded_at: string | null;
   content_hash: string | null;
   status: ArtifactStatus;
+  source_group: string;
+  source_family: string;
+  artifact_type: string;
+  collection_method: string;
+  parser_class: string;
+  provenance_notes: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -105,7 +120,11 @@ export interface ApiClient {
   updateCase: (caseId: string, input: CaseUpdateInput) => Promise<CasePublic>;
   listArtifacts: (caseId: string) => Promise<ArtifactPublic[]>;
   getArtifact: (caseId: string, artifactId: string) => Promise<ArtifactPublic>;
-  uploadArtifact: (caseId: string, file: File) => Promise<ArtifactPublic>;
+  uploadArtifact: (
+    caseId: string,
+    file: File,
+    metadata?: ArtifactMetadataInput,
+  ) => Promise<ArtifactPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -255,9 +274,28 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
   async function uploadArtifact(
     caseId: string,
     file: File,
+    metadata: ArtifactMetadataInput = {},
   ): Promise<ArtifactPublic> {
     const formData = new FormData();
     formData.append("file", file);
+    if (metadata.source_group) {
+      formData.append("source_group", metadata.source_group);
+    }
+    if (metadata.source_family) {
+      formData.append("source_family", metadata.source_family);
+    }
+    if (metadata.artifact_type) {
+      formData.append("artifact_type", metadata.artifact_type);
+    }
+    if (metadata.collection_method) {
+      formData.append("collection_method", metadata.collection_method);
+    }
+    if (metadata.parser_class) {
+      formData.append("parser_class", metadata.parser_class);
+    }
+    if (metadata.provenance_notes) {
+      formData.append("provenance_notes", metadata.provenance_notes);
+    }
 
     const headers = new Headers();
     const token = tokenProvider();

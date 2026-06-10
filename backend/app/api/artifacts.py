@@ -5,7 +5,7 @@ from __future__ import annotations
 import uuid
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
 from app.core.auth_deps import get_current_user
@@ -13,8 +13,10 @@ from app.core.config import Settings, get_settings
 from app.db.session import get_db
 from app.models.artifact import ArtifactStatus
 from app.models.user import User
-from app.schemas.artifact import ArtifactPublic
+from app.schemas.artifact import ArtifactMetadataInput, ArtifactPublic
+from app.schemas.manifest import CaseArtifactManifest
 from app.services import artifact_service
+from app.services.manifest_service import build_case_manifest
 from app.services.storage_service import StorageBackend, get_storage_service
 
 router = APIRouter(tags=["artifacts"])
@@ -37,10 +39,24 @@ async def upload_artifact(
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
     storage: Annotated[StorageBackend, Depends(get_storage)],
+    source_group: Annotated[str | None, Form()] = None,
+    source_family: Annotated[str | None, Form()] = None,
+    artifact_type: Annotated[str | None, Form()] = None,
+    collection_method: Annotated[str | None, Form()] = None,
+    parser_class: Annotated[str | None, Form()] = None,
+    provenance_notes: Annotated[str | None, Form()] = None,
 ) -> ArtifactPublic:
     """Upload one evidence file to a case and preserve raw bytes locally."""
     content = await file.read()
     filename = file.filename or ""
+    metadata = ArtifactMetadataInput(
+        source_group=source_group,
+        source_family=source_family,
+        artifact_type=artifact_type,
+        collection_method=collection_method,
+        parser_class=parser_class,
+        provenance_notes=provenance_notes,
+    )
 
     try:
         artifact = artifact_service.upload_artifact(
@@ -51,6 +67,7 @@ async def upload_artifact(
             mime_type=file.content_type,
             content=content,
             storage=storage,
+            metadata=metadata,
         )
     except ValueError as exc:
         raise HTTPException(
@@ -90,6 +107,28 @@ def list_artifacts(
 
     artifacts = artifact_service.list_artifacts_for_case(db, current_user, case_id)
     return [ArtifactPublic.model_validate(item) for item in artifacts]
+
+
+@router.get(
+    "/cases/{case_id}/artifacts/manifest",
+    response_model=CaseArtifactManifest,
+)
+def get_case_artifact_manifest(
+    case_id: uuid.UUID,
+    current_user: Annotated[User, Depends(get_current_user)],
+    db: Annotated[Session, Depends(get_db)],
+) -> CaseArtifactManifest:
+    """Return a manifest of all artifacts for an accessible case."""
+    from app.services.case_service import get_case_for_user
+
+    if get_case_for_user(db, current_user, case_id) is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Case not found",
+        )
+
+    artifacts = artifact_service.list_artifacts_for_case(db, current_user, case_id)
+    return build_case_manifest(case_id, artifacts)
 
 
 @router.get(

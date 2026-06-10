@@ -7,6 +7,7 @@ import {
   Link,
   Stack,
   Text,
+  Textarea,
 } from "@chakra-ui/react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FormEvent, useState } from "react";
@@ -15,12 +16,27 @@ import { Link as RouterLink, useParams } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import {
   ApiRequestError,
+  type ArtifactMetadataInput,
   type ArtifactPublic,
   formatValidationErrors,
 } from "../lib/apiClient";
 
+const PARSER_CLASS_OPTIONS = [
+  { value: "", label: "Unknown (default)" },
+  { value: "direct_structured", label: "Direct structured" },
+  { value: "readable_then_structured", label: "Readable then structured" },
+  { value: "archive_extraction", label: "Archive extraction" },
+  { value: "screenshot_ocr", label: "Screenshot OCR" },
+  { value: "backup_viewer", label: "Backup viewer" },
+  { value: "manual_escalation", label: "Manual escalation" },
+];
+
 function formatStatus(status: ArtifactPublic["status"]): string {
   return status.replace(/_/g, " ");
+}
+
+function formatProvenance(value: string): string {
+  return value === "unknown" ? "Unknown" : value.replace(/_/g, " ");
 }
 
 export function CaseUploadPage() {
@@ -28,6 +44,7 @@ export function CaseUploadPage() {
   const { client } = useAuth();
   const queryClient = useQueryClient();
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [metadata, setMetadata] = useState<ArtifactMetadataInput>({});
   const [formError, setFormError] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
@@ -38,11 +55,13 @@ export function CaseUploadPage() {
   });
 
   const uploadMutation = useMutation({
-    mutationFn: (file: File) => client.uploadArtifact(caseId ?? "", file),
+    mutationFn: (input: { file: File; metadata: ArtifactMetadataInput }) =>
+      client.uploadArtifact(caseId ?? "", input.file, input.metadata),
     onSuccess: () => {
       setSuccessMessage("Evidence uploaded and preserved.");
       setFormError(null);
       setSelectedFile(null);
+      setMetadata({});
       void queryClient.invalidateQueries({ queryKey: ["artifacts", caseId] });
     },
     onError: (error: unknown) => {
@@ -71,7 +90,14 @@ export function CaseUploadPage() {
       setFormError("Choose a file to upload.");
       return;
     }
-    uploadMutation.mutate(selectedFile);
+    uploadMutation.mutate({ file: selectedFile, metadata });
+  }
+
+  function updateMetadata(field: keyof ArtifactMetadataInput, value: string) {
+    setMetadata((current) => ({
+      ...current,
+      [field]: value || undefined,
+    }));
   }
 
   return (
@@ -100,6 +126,72 @@ export function CaseUploadPage() {
                 }}
               />
             </Field.Root>
+
+            <Heading size="sm">Provenance metadata (optional)</Heading>
+            <Field.Root>
+              <Field.Label>Source group</Field.Label>
+              <Input
+                value={metadata.source_group ?? ""}
+                onChange={(event) =>
+                  updateMetadata("source_group", event.target.value)
+                }
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>Source family</Field.Label>
+              <Input
+                value={metadata.source_family ?? ""}
+                onChange={(event) =>
+                  updateMetadata("source_family", event.target.value)
+                }
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>Artifact type</Field.Label>
+              <Input
+                value={metadata.artifact_type ?? ""}
+                onChange={(event) =>
+                  updateMetadata("artifact_type", event.target.value)
+                }
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>Collection method</Field.Label>
+              <Input
+                value={metadata.collection_method ?? ""}
+                onChange={(event) =>
+                  updateMetadata("collection_method", event.target.value)
+                }
+              />
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>Parser class</Field.Label>
+              <select
+                aria-label="Parser class"
+                value={metadata.parser_class ?? ""}
+                onChange={(event) =>
+                  updateMetadata("parser_class", event.target.value)
+                }
+                style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+              >
+                {PARSER_CLASS_OPTIONS.map((option) => (
+                  <option key={option.value || "unknown"} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </Field.Root>
+            <Field.Root>
+              <Field.Label>Provenance notes</Field.Label>
+              <Textarea
+                value={metadata.provenance_notes ?? ""}
+                onChange={(event) =>
+                  updateMetadata("provenance_notes", event.target.value)
+                }
+                rows={3}
+              />
+            </Field.Root>
+
             {formError && (
               <Text color="red.500" role="alert">
                 {formError}
@@ -141,10 +233,20 @@ export function CaseUploadPage() {
                 borderRadius="md"
                 p={4}
               >
-                <Text fontWeight="semibold">{artifact.original_filename}</Text>
+                <Link asChild fontWeight="semibold">
+                  <RouterLink
+                    to={`/cases/${caseId}/artifacts/${artifact.id}`}
+                  >
+                    {artifact.original_filename}
+                  </RouterLink>
+                </Link>
                 <Text fontSize="sm" color="gray.600">
                   {artifact.mime_type} · {artifact.file_size_bytes} bytes ·{" "}
                   {formatStatus(artifact.status)}
+                </Text>
+                <Text fontSize="sm" color="gray.600">
+                  Source: {formatProvenance(artifact.source_group)} /{" "}
+                  {formatProvenance(artifact.source_family)}
                 </Text>
                 {artifact.uploaded_at && (
                   <Text fontSize="sm" color="gray.600">
