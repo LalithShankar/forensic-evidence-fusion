@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-11 (Epics 10–12 in review)_
+_Last updated by: Agent on 2026-06-11 (Epics 10–12 merged to main)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -13,7 +13,7 @@ _Last updated by: Agent on 2026-06-11 (Epics 10–12 in review)_
 | 6     | Epic 7         | merged (PR #11) |
 | 7     | Epic 8         | merged (PR #12) |
 | 8     | Epic 9         | merged          |
-| 9     | Epic 10, 11, 12 | in review (stacked PRs) |
+| 9     | Epic 10, 11, 12 | merged (direct to main) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -87,42 +87,46 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 6 | #10 | Case CRUD APIs, case_memberships migration, membership-based access, case list/detail UI | none |
 | 2026-06-10 | 7 | #11 | Evidence upload API, local raw preservation + SHA-256, CaseUpload UI | none |
 | 2026-06-10 | 8 | #12 | StorageBackend abstraction, Azure/local swap, raw/readable/structured paths | none |
+| 2026-06-10 | 9 | #13 | Artifact manifest API, provenance metadata, manifest UI | none |
+| 2026-06-11 | 10 | direct | Bulk upload, rule-based classification, batch grouping UI | none |
+| 2026-06-11 | 11 | direct | Review queue API/UI, approve/correct/preserve-only actions | none |
+| 2026-06-11 | 12 | direct | Transformation pipeline MVP, parsers, smoke tests (incl. live curl script) | none |
 
 ## Epic 10 tracker (LAL-14)
-Branch: `epic-10-bulk-upload-and-categorization` · In review
+Branch: `epic-10-bulk-upload-and-categorization` · Merged to main
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 10.1 | LAL-48 | Multiple files → each gets own Artifact | ✅ | pending | pass | `bulk_upload_service` + bulk-upload API |
-| 10.1 | LAL-48 | Partial failure preserves successes | ✅ | pending | pass | per-file results in response |
-| 10.1 | LAL-48 | Batch grouping visible in UI | ✅ | pending | pass | `upload_batch_id` + `BulkUpload.tsx` |
-| 10.2 | LAL-49 | WhatsApp filename → ThirdParty/WhatsApp + confidence | ✅ | pending | pass | `classification_service` rules |
-| 10.2 | LAL-49 | Takeout ZIP → Google/Takeout + confidence | ✅ | pending | pass | filename rule |
-| 10.2 | LAL-49 | Low confidence → needs review | ✅ | pending | pass | `ArtifactStatus.needs_review` |
+| 10.1 | LAL-48 | Multiple files → each gets own Artifact | ✅ | merged | pass | `bulk_upload_service` + bulk-upload API |
+| 10.1 | LAL-48 | Partial failure preserves successes | ✅ | merged | pass | per-file results in response |
+| 10.1 | LAL-48 | Batch grouping visible in UI | ✅ | merged | pass | `upload_batch_id` + `BulkUpload.tsx` |
+| 10.2 | LAL-49 | WhatsApp filename → ThirdParty/WhatsApp + confidence | ✅ | merged | pass | `classification_service` rules |
+| 10.2 | LAL-49 | Takeout ZIP → Google/Takeout + confidence | ✅ | merged | pass | filename rule |
+| 10.2 | LAL-49 | Low confidence → needs review | ✅ | merged | pass | `ArtifactStatus.needs_review` |
 
 ## Epic 11 tracker (LAL-15)
-Branch: `epic-11-review-queue` · In review (stacked on Epic 10)
+Branch: `epic-11-review-queue` · Merged to main
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 11.1 | LAL-50 | Low-confidence items in queue with suggestion + reason | ✅ | pending | pass | `GET /review-queue` |
-| 11.1 | LAL-50 | Blocked artifacts show blocker notes | ✅ | pending | pass | `blocker_notes` field |
-| 11.1 | LAL-50 | Empty state when nothing needs review | ✅ | pending | pass | `ReviewQueue.tsx` |
-| 11.2 | LAL-51 | Correct source_group/family/type | ✅ | pending | pass | PATCH review-queue |
-| 11.2 | LAL-51 | Approve → ready_for_transformation | ✅ | pending | pass | extended `ArtifactStatus` |
-| 11.2 | LAL-51 | Preserve-only excludes auto transformation | ✅ | pending | pass | `preserve_only` status |
+| 11.1 | LAL-50 | Low-confidence items in queue with suggestion + reason | ✅ | merged | pass | `GET /review-queue` |
+| 11.1 | LAL-50 | Blocked artifacts show blocker notes | ✅ | merged | pass | `blocker_notes` field |
+| 11.1 | LAL-50 | Empty state when nothing needs review | ✅ | merged | pass | `ReviewQueue.tsx` |
+| 11.2 | LAL-51 | Correct source_group/family/type | ✅ | merged | pass | PATCH review-queue |
+| 11.2 | LAL-51 | Approve → ready_for_transformation | ✅ | merged | pass | extended `ArtifactStatus` |
+| 11.2 | LAL-51 | Preserve-only excludes auto transformation | ✅ | merged | pass | `preserve_only` status |
 
 ## Epic 12 tracker (LAL-16)
-Branch: `epic-12-transformation-pipeline-mvp` · In review (stacked on Epic 11)
+Branch: `epic-12-transformation-pipeline-mvp` · Merged to main
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 12.1 | LAL-52 | Ready artifact → TransformationRecord created | ✅ | pending | pass | `transformation_pipeline.start` |
-| 12.1 | LAL-52 | Stages visible through structured_generated | ✅ | pending | pass | state machine + API response |
-| 12.1 | LAL-52 | Stage failure stores failure/limitation notes | ✅ | pending | pass | blocked status + notes |
-| 12.2 | LAL-53 | CSV → structured rows + metadata | ✅ | pending | pass | `csv_parser.py` |
-| 12.2 | LAL-53 | JSON → readable + structured outputs | ✅ | pending | pass | `json_parser.py` |
-| 12.2 | LAL-53 | PDF extractable text → readable preview | ✅ | pending | pass | `pdf_parser.py` (literal extraction MVP) |
+| 12.1 | LAL-52 | Ready artifact → TransformationRecord created | ✅ | merged | pass | `transformation_pipeline.start` |
+| 12.1 | LAL-52 | Stages visible through structured_generated | ✅ | merged | pass | state machine + API response |
+| 12.1 | LAL-52 | Stage failure stores failure/limitation notes | ✅ | merged | pass | blocked status + notes |
+| 12.2 | LAL-53 | CSV → structured rows + metadata | ✅ | merged | pass | `csv_parser.py` |
+| 12.2 | LAL-53 | JSON → readable + structured outputs | ✅ | merged | pass | `json_parser.py` |
+| 12.2 | LAL-53 | PDF extractable text → readable preview | ✅ | merged | pass | `pdf_parser.py` (literal extraction MVP) |
 
 ## Epic 9 tracker (LAL-13)
 Branch: `epic-9-artifact-manifest-and-metadata` · Merged
