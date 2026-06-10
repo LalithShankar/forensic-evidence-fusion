@@ -13,7 +13,9 @@
 | Epic | File | Status |
 |------|------|--------|
 | 6 | [epic_06_case_management.md](./epic_06_case_management.md) | merged (reference) |
-| 7 | [epic_07_evidence_upload_and_raw_preservation.md](./epic_07_evidence_upload_and_raw_preservation.md) | **current** |
+| 7 | [epic_07_evidence_upload_and_raw_preservation.md](./epic_07_evidence_upload_and_raw_preservation.md) | merged (reference) |
+| 8 | [epic_08_blob_storage_integration.md](./epic_08_blob_storage_integration.md) | merged (reference) |
+| 9 | [epic_09_artifact_manifest_and_metadata.md](./epic_09_artifact_manifest_and_metadata.md) | **next** |
 
 ## Legacy multi-role EDAP (optional)
 
@@ -32,7 +34,7 @@
 ```text
 Follow @docs/agent-prompts/FAST_TRACK.md
 
-@docs/agent-prompts/epic_07_evidence_upload_and_raw_preservation.md
+@docs/agent-prompts/epic_09_artifact_manifest_and_metadata.md
 ```
 
 Replace the epic file for each new epic.
