@@ -36,3 +36,29 @@ Output this block at the end of each run:
 ## Definition of Done
 Nothing is "done" until acceptance criteria pass AND CI is green AND
 STATUS.md is updated AND a human approves the merge.
+
+## Cursor Cloud specific instructions
+
+### System prerequisites (one-time on the VM)
+- **PostgreSQL 16** via `apt` (no `docker-compose` in this repo). Start with `sudo pg_ctlcluster 16 main start` if `pg_isready` fails. Default dev DB: `forensic_dev`, user `postgres` / password `postgres` (matches `backend/.env.example`).
+- **Python 3.11+** with `python3.12-venv` for the backend virtualenv at `backend/.venv`.
+- **Node.js 20+** (CI uses 20; Node 22 also works).
+
+### Local config
+- Copy `backend/.env.example` → `backend/.env` and `frontend/.env.example` → `frontend/.env` if missing. Never commit `.env`.
+- Run migrations before starting the API: `cd backend && source .venv/bin/activate && export APP_ENV=local && alembic upgrade head`.
+
+### Running services (manual per session)
+| Service | Command | URL |
+|---------|---------|-----|
+| PostgreSQL | `sudo pg_ctlcluster 16 main start` | `localhost:5432` |
+| Backend API | `cd backend && source .venv/bin/activate && export APP_ENV=local && uvicorn app.main:app --reload --port 8000` | http://localhost:8000/health |
+| Frontend | `cd frontend && npm run dev -- --host 0.0.0.0` | http://localhost:5173 |
+
+Use tmux for long-running dev servers. The Dashboard at `/` calls `/health` and should show **Backend status: ok** when everything is wired correctly.
+
+### Lint / test / build (see also `.github/workflows/ci.yml`)
+- **Backend:** `cd backend && source .venv/bin/activate && ruff check . && black --check . && mypy app && pytest`
+- **Frontend:** `cd frontend && npm run lint && npm run typecheck && npm run test && npm run build`
+
+Backend tests use in-memory SQLite and do **not** require PostgreSQL. Running the live API **does** require PostgreSQL.
