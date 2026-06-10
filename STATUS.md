@@ -1,13 +1,13 @@
 # Project Status
 
-_Last updated by: Planner on 2026-06-10_
+_Last updated by: Hybrid EDAP dispatch on 2026-06-10_
 
 ## Batch plan
 | Batch | Epics          | State        |
 |-------|----------------|--------------|
 | 1     | Epic 1         | merged       |
 | 2     | Epic 2, Epic 3 | merged       |
-| 3     | Epic 4         | **next** — not started |
+| 3     | Epic 4         | **in review** — PR open, CI pending |
 | 4     | Epic 5         | design ready; blocked on Manager approval + Epic 4 |
 
 ## Epic 1 tracker (LAL-5)
@@ -54,14 +54,20 @@ Branch: `epic-3-core-frontend-app-shell` · Merged to main (PR #5)
 | 3.2 | LAL-34 | API client health call targets configured backend URL | ✅ | merged | pass | `lib/apiClient.ts` + tests |
 | 3.2 | LAL-34 | Frontend .env not tracked in Git | ✅ | merged | pass | `.gitignore` + `git check-ignore` |
 
-## Epic 4 tracker (LAL-8) — next up
-Branch: not started · **Start Builder when ready**
+## Epic 4 tracker (LAL-8)
+Branch: `epic-4-database-foundation` · pushed; **PR pending** (create at GitHub) · QA pass (local)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 4.1 | — | Database connection + Alembic migrations | ❌ | — | — | depends on Epic 2 (merged) |
-| 4.2 | — | Case/artifact/user placeholder models | ❌ | — | — | |
-| 4.3 | — | audit_log table + write helper | ❌ | — | — | |
+| 4.1 | LAL-35 | DATABASE_URL init on backend start | ✅ | open | pass | `app/db/session.py` + lifespan in `main.py` |
+| 4.1 | LAL-35 | Alembic migrations create/update schema | ✅ | open | pass | `alembic/` + `001_initial_schema` migration |
+| 4.1 | LAL-35 | Tests use SQLite, no production credentials | ✅ | open | pass | `tests/conftest.py` + `test_db_session.py` |
+| 4.2 | LAL-36 | users/cases/artifacts placeholder tables | ✅ | open | pass | Alembic migration + ORM models |
+| 4.2 | LAL-36 | SQLAlchemy metadata loads without circular imports | ✅ | open | pass | `app/models/__init__.py` + test_models.py |
+| 4.2 | LAL-36 | Models have required IDs and timestamps | ✅ | open | pass | UUIDPrimaryKeyMixin + TimestampMixin |
+| 4.3 | LAL-37 | audit_log table with required columns | ✅ | open | pass | `app/models/audit.py` + migration |
+| 4.3 | LAL-37 | audit helper writes acting user + target object | ✅ | open | pass | `app/services/audit_service.py` |
+| 4.3 | LAL-37 | Simulated audit creates exactly one row | ✅ | open | pass | `tests/test_audit_service.py` |
 
 Status key: ❌ not started · ⏳ in progress · ✅ done
 
@@ -71,6 +77,7 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 1 | merged | Repo scaffold, env contract, CI foundation | none |
 | 2026-06-10 | 2 | #4 | FastAPI shell, structured logging, backend tests | STATUS.md |
 | 2026-06-10 | 3 | #5 | React shell, routing, API client | STATUS.md |
+| 2026-06-10 | 4 | open | SQLAlchemy session, Alembic migrations, placeholder models, audit_log | none |
 
 ## Epic 5 tracker (LAL-9) — design only
 Branch: not started · **Implementation blocked pending Manager approval**
@@ -84,5 +91,5 @@ Branch: not started · **Implementation blocked pending Manager approval**
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- **Epic 4 (LAL-8):** Start Builder agent when ready (see prompt below).
+- **Epic 4 (LAL-8):** PR open — awaiting Manager review and CI green.
 - **Epic 5 (LAL-9):** Review and approve `docs/design/EPIC_05_design.md` — see §10 open questions. Implementation waits until Epic 4 merges + design approved.
