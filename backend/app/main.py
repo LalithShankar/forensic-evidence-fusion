@@ -31,7 +31,13 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     dispose_engine()
 
 
-app = FastAPI(title=settings.app_name, lifespan=lifespan)
+app = FastAPI(
+    title=settings.app_name,
+    lifespan=lifespan,
+    docs_url="/docs" if settings.is_local else None,
+    redoc_url="/redoc" if settings.is_local else None,
+    openapi_url="/openapi.json" if settings.is_local else None,
+)
 request_logger = get_logger("app.request")
 
 app.add_middleware(
@@ -61,6 +67,9 @@ async def structured_request_logging(
 
     try:
         response = await call_next(request)
+        user_id = getattr(request.state, "user_id", None)
+        if user_id:
+            bind_log_context(user_id=user_id)
     except Exception:
         request_logger.exception(
             "request_failed method=%s path=%s",

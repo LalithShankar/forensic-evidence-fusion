@@ -28,6 +28,7 @@ dist/
 
 # Local data
 /data/
+*.db
 
 # Package artifacts
 user_story/

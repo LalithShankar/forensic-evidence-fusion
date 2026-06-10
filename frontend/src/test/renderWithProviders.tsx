@@ -4,13 +4,23 @@ import { render, type RenderOptions } from "@testing-library/react";
 import type { ReactElement, ReactNode } from "react";
 import { MemoryRouter, type MemoryRouterProps } from "react-router-dom";
 
+import {
+  AuthProvider,
+  type AuthProviderProps,
+} from "../context/AuthContext";
+
 interface ProviderOptions {
   routerProps?: MemoryRouterProps;
+  authProps?: Omit<AuthProviderProps, "children">;
 }
 
 export function renderWithProviders(
   ui: ReactElement,
-  { routerProps, ...renderOptions }: ProviderOptions & RenderOptions = {},
+  {
+    routerProps,
+    authProps,
+    ...renderOptions
+  }: ProviderOptions & RenderOptions = {},
 ) {
   const queryClient = new QueryClient({
     defaultOptions: {
@@ -22,7 +32,9 @@ export function renderWithProviders(
     return (
       <ChakraProvider value={defaultSystem}>
         <QueryClientProvider client={queryClient}>
-          <MemoryRouter {...routerProps}>{children}</MemoryRouter>
+          <MemoryRouter {...routerProps}>
+            <AuthProvider {...authProps}>{children}</AuthProvider>
+          </MemoryRouter>
         </QueryClientProvider>
       </ChakraProvider>
     );

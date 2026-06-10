@@ -38,10 +38,23 @@ without human sign-off.
 - Dependent epics -> run in the NEXT batch after the dependency merges.
 - Batch size: start with 2-3 parallel epics, scale up only once stable.
 
-## Local vs Cloud
-- Local / worktree: fast dev loop, you watch live. Good for first epics.
-- Cloud agent: long jobs, fire-and-forget, opens its own PR; monitor at
-  cursor.com/agents. Good once prompts + rules are proven.
+## Hybrid runtime (default from Batch 3 onward)
+**Cloud orchestrates; local develops.** See `docs/agent-prompts/HYBRID_EDAP.md`.
+
+| Role | Where | Job |
+|------|-------|-----|
+| Cloud Orchestrator | Cloud (`&` prefix) | Dispatch, Linear, STATUS.md, PR/CI status — **no feature code** |
+| Local Builder / Integration | Local Agent mode | Implementation and CI fixes |
+| Local Reviewer / QA | Local Ask or Agent | AC review and test verification |
+
+Flow per epic: Cloud dispatch → Local Builder → [Manager review] → Local Reviewer → Local Integration (if CI red) → Local QA → Cloud status update → Manager merge.
+
+Prompts: `docs/agent-prompts/cloud_orchestrator.md`, `local_builder.md`, `local_reviewer.md`, `local_integration.md`, `local_qa.md`, plus per-epic `epic_XX_dispatch.md`.
+
+## Local vs Cloud (when to use which)
+- **Local / worktree:** all coding, tests, CI fixes — always.
+- **Cloud Orchestrator:** coordination only — low token cost, monitor at cursor.com/agents.
+- **Full-cloud pipeline (legacy):** one `&` job runs Build→Review→Integration→QA in cloud — avoid; higher cost, less control. Use only if Manager explicitly opts in.
 
 ## Human review loop (non-negotiable)
 - Keep epics SMALL so diffs are reviewable.

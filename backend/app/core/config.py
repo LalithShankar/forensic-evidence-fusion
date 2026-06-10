@@ -29,6 +29,10 @@ class Settings(BaseSettings):
         alias="DATABASE_URL",
     )
     secret_key: str = Field(default="change-me-in-local-env-only", alias="SECRET_KEY")
+    access_token_expire_minutes: int = Field(
+        default=30,
+        alias="ACCESS_TOKEN_EXPIRE_MINUTES",
+    )
     azure_key_vault_url: str | None = Field(default=None, alias="AZURE_KEY_VAULT_URL")
     cors_allowed_origins: str = Field(
         default="http://localhost:5173",

@@ -5,6 +5,14 @@ import { describe, expect, it, vi } from "vitest";
 import App from "./App";
 import { renderWithProviders } from "./test/renderWithProviders";
 
+const authenticatedUser = {
+  id: "11111111-1111-1111-1111-111111111111",
+  email: "analyst@local.dev",
+  display_name: "Local Analyst",
+  role: "analyst" as const,
+  status: "active" as const,
+};
+
 describe("routing", () => {
   it("renders base routes without full page reload", async () => {
     vi.stubGlobal(
@@ -20,7 +28,13 @@ describe("routing", () => {
     );
 
     const user = userEvent.setup();
-    renderWithProviders(<App />, { routerProps: { initialEntries: ["/"] } });
+    renderWithProviders(<App />, {
+      routerProps: { initialEntries: ["/"] },
+      authProps: {
+        initialToken: "test-token",
+        initialUser: authenticatedUser,
+      },
+    });
 
     expect(
       screen.getByRole("heading", { name: /dashboard/i }),
@@ -37,6 +51,10 @@ describe("routing", () => {
   it("shows a not-found page for unknown routes", () => {
     renderWithProviders(<App />, {
       routerProps: { initialEntries: ["/unknown-route"] },
+      authProps: {
+        initialToken: "test-token",
+        initialUser: authenticatedUser,
+      },
     });
 
     expect(
