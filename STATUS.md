@@ -1,12 +1,12 @@
 # Project Status
 
-_Last updated by: EDAP pipeline (Builder/QA) on 2026-06-10_
+_Last updated by: EDAP pipeline (Epic 3 Builder/QA) on 2026-06-10_
 
 ## Batch plan
 | Batch | Epics          | State        |
 |-------|----------------|--------------|
 | 1     | Epic 1, Epic 2 | in progress  |
-| 2     | Epic 3         | blocked (needs 1,2) |
+| 2     | Epic 3         | in progress  |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · PR: https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-1-repo-rules-and-local-dev-foundation
@@ -24,6 +24,18 @@ Branch: `epic-1-repo-rules-and-local-dev-foundation` · PR: https://github.com/L
 | 1.3 | LAL-29 | CI: secret scan fails on .env/secrets | ✅ | open | pass | tracked-.env check + gitleaks job |
 | 1.3 | LAL-29 | main branch protection (PR + checks + approval) | ⏳ | open | partial | documented in docs/branch-protection.md; GitHub settings pending |
 
+## Epic 3 tracker (LAL-7)
+Branch: `epic-3-core-frontend-app-shell` · PR: _pending push_
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 3.1 | LAL-33 | Dashboard landing page loads | ✅ | open | pass | `/` renders DashboardPage with layout |
+| 3.1 | LAL-33 | Client-side routing (no full reload) | ✅ | open | pass | React Router; Dashboard ↔ About nav test |
+| 3.1 | LAL-33 | Smoke test renders app | ✅ | open | pass | App.test.tsx |
+| 3.2 | LAL-34 | VITE_APP_ENV=local reads VITE_API_BASE_URL | ✅ | open | pass | config.test.ts |
+| 3.2 | LAL-34 | API client health call targets configured URL | ✅ | open | pass | apiClient.test.ts + Dashboard health query |
+| 3.2 | LAL-34 | frontend .env not tracked in Git | ✅ | open | pass | only `.env.example` tracked; root .gitignore |
+
 Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Change log (per merged epic)
@@ -33,4 +45,3 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Open PR from compare link above if not auto-created (gh CLI not authenticated in agent environment).
