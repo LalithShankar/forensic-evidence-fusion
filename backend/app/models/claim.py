@@ -1,4 +1,4 @@
-"""Canonical claim and related stub models."""
+"""Canonical claim and related models."""
 
 from __future__ import annotations
 
@@ -14,7 +14,7 @@ from app.models.base import TimestampMixin, UUIDPrimaryKeyMixin
 
 
 class Claim(UUIDPrimaryKeyMixin, TimestampMixin, Base):
-    """Narrative claim stub for future claim-testing workflows."""
+    """Narrative claim that can be tested against evidence events."""
 
     __tablename__ = "claims"
 
@@ -29,16 +29,30 @@ class Claim(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         default="general",
     )
+    claimant: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    claimed_time_text: Mapped[str | None] = mapped_column(String(256), nullable=True)
+    claimed_time_normalized: Mapped[datetime | None] = mapped_column(
+        DateTime(timezone=True),
+        nullable=True,
+    )
+    claimed_people: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    claim_source: Mapped[str | None] = mapped_column(String(64), nullable=True)
     claim_source_artifact_id: Mapped[uuid.UUID | None] = mapped_column(
         Uuid(as_uuid=True),
         ForeignKey("artifacts.id"),
         nullable=True,
     )
+    created_by: Mapped[uuid.UUID | None] = mapped_column(
+        Uuid(as_uuid=True),
+        ForeignKey("users.id"),
+        nullable=True,
+    )
+    status: Mapped[str] = mapped_column(String(32), nullable=False, default="active")
     parse_confidence: Mapped[float] = mapped_column(Float, nullable=False, default=0.5)
 
 
 class ClaimResolution(UUIDPrimaryKeyMixin, TimestampMixin, Base):
-    """Claim resolution stub."""
+    """Deterministic claim resolution against evidence events."""
 
     __tablename__ = "claim_resolutions"
 
@@ -55,8 +69,17 @@ class ClaimResolution(UUIDPrimaryKeyMixin, TimestampMixin, Base):
     resolution_status: Mapped[str] = mapped_column(
         String(32),
         nullable=False,
-        default="pending",
+        default="completed",
     )
+    result_label: Mapped[str | None] = mapped_column(String(64), nullable=True)
+    support_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    contradiction_score: Mapped[float | None] = mapped_column(Float, nullable=True)
+    supporting_event_ids: Mapped[list[str] | None] = mapped_column(JSON, nullable=True)
+    contradicting_event_ids: Mapped[list[str] | None] = mapped_column(
+        JSON,
+        nullable=True,
+    )
+    unresolved_reason: Mapped[str | None] = mapped_column(Text, nullable=True)
     resolution_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
 
 

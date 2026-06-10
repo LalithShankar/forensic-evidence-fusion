@@ -216,6 +216,48 @@ export interface TimelineEventFilters {
   review_status?: string;
 }
 
+export interface ClaimCreateInput {
+  claim_text: string;
+  claimant?: string | null;
+  claimed_time_text?: string | null;
+  claimed_people?: string[] | null;
+  claim_source?: string | null;
+}
+
+export interface ClaimPublic {
+  id: string;
+  case_id: string;
+  claim_text: string;
+  claim_type: string;
+  claimant: string | null;
+  claimed_time_text: string | null;
+  claimed_time_normalized: string | null;
+  claimed_people: string[] | null;
+  claim_source: string | null;
+  claim_source_artifact_id: string | null;
+  parse_confidence: number;
+  created_by: string | null;
+  status: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ClaimResolutionPublic {
+  id: string;
+  case_id: string;
+  claim_id: string;
+  resolution_status: string;
+  result_label: string | null;
+  support_score: number | null;
+  contradiction_score: number | null;
+  supporting_event_ids: string[] | null;
+  contradicting_event_ids: string[] | null;
+  unresolved_reason: string | null;
+  resolution_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -288,6 +330,17 @@ export interface ApiClient {
     caseId: string,
     eventId: string,
   ) => Promise<EvidenceEventPublic>;
+  createClaim: (caseId: string, input: ClaimCreateInput) => Promise<ClaimPublic>;
+  listClaims: (caseId: string) => Promise<ClaimPublic[]>;
+  getClaim: (caseId: string, claimId: string) => Promise<ClaimPublic>;
+  resolveClaim: (
+    caseId: string,
+    claimId: string,
+  ) => Promise<ClaimResolutionPublic>;
+  getClaimResolution: (
+    caseId: string,
+    claimId: string,
+  ) => Promise<ClaimResolutionPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -633,6 +686,46 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     );
   }
 
+  async function createClaim(
+    caseId: string,
+    input: ClaimCreateInput,
+  ): Promise<ClaimPublic> {
+    return request<ClaimPublic>(`/cases/${caseId}/claims`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async function listClaims(caseId: string): Promise<ClaimPublic[]> {
+    return request<ClaimPublic[]>(`/cases/${caseId}/claims`);
+  }
+
+  async function getClaim(
+    caseId: string,
+    claimId: string,
+  ): Promise<ClaimPublic> {
+    return request<ClaimPublic>(`/cases/${caseId}/claims/${claimId}`);
+  }
+
+  async function resolveClaim(
+    caseId: string,
+    claimId: string,
+  ): Promise<ClaimResolutionPublic> {
+    return request<ClaimResolutionPublic>(
+      `/cases/${caseId}/claims/${claimId}/resolve`,
+      { method: "POST" },
+    );
+  }
+
+  async function getClaimResolution(
+    caseId: string,
+    claimId: string,
+  ): Promise<ClaimResolutionPublic> {
+    return request<ClaimResolutionPublic>(
+      `/cases/${caseId}/claims/${claimId}/resolution`,
+    );
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -656,6 +749,11 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     listCaseEvents,
     listTimelineEvents,
     getTimelineEvent,
+    createClaim,
+    listClaims,
+    getClaim,
+    resolveClaim,
+    getClaimResolution,
   };
 }
 

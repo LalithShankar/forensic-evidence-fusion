@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-11 (Epics 13–15 merged to main — R2 gate closed)_
+_Last updated by: Agent on 2026-06-11 (Epics 16–17 batch — R3 partial, non-Azure half)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -15,6 +15,7 @@ _Last updated by: Agent on 2026-06-11 (Epics 13–15 merged to main — R2 gate 
 | 8     | Epic 9         | merged          |
 | 9     | Epic 10, 11, 12 | merged (direct to main) |
 | 10    | Epic 13, 14, 15 | merged (direct to main) — **R2 closed** |
+| 11    | Epic 16, 17    | in review (PRs pending) — **R3 partial (no Azure)** |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -95,6 +96,8 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-11 | 13 | `10e2d08` | ReadableView model/API/UI, pipeline registration | none |
 | 2026-06-11 | 14 | `fa3e685` | StructuredDataset model/API/UI, capped preview | none |
 | 2026-06-11 | 15 | `eede05f` | Canonical schema models, normalization, R2 smoke test | none |
+| 2026-06-11 | 16 | pending | Timeline API filters, timeline UI, event detail | none |
+| 2026-06-11 | 17 | pending | Claims CRUD, deterministic resolution, R3 smoke | none |
 
 ## Epic 13 tracker (LAL-17)
 Branch: `epic-13-readable-preview-layer` · Merged to main (`10e2d08`)
@@ -130,6 +133,30 @@ Branch: `epic-15-canonical-evidence-schema-integration` · Merged to main (`eede
 | 15.2 | LAL-59 | Message-like row → EvidenceEvent | ✅ | merged | pass | `normalization_service` |
 | 15.2 | LAL-59 | Transaction-like row → event + payload | ✅ | merged | pass | `transaction_observed` |
 | 15.2 | LAL-59 | Weak timestamp preserved with confidence | ✅ | merged | pass | `original_timestamp_text` |
+
+## Epic 16 tracker (LAL-20)
+Branch: `epic-16-timeline-and-event-workspace` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 16.1 | LAL-60 | Events chronological (normalized_timestamp asc) | ✅ | pending | pass | `event_service.list_timeline_events` |
+| 16.1 | LAL-60 | Filters: event_type, source_group, review_status | ✅ | pending | pass | query params on GET events |
+| 16.1 | LAL-60 | Provenance + artifact_id + source_group in response | ✅ | pending | pass | join Artifact |
+| 16.2 | LAL-61 | Timeline shows date, title, source, confidence, review | ✅ | pending | pass | `TimelineEventList` |
+| 16.2 | LAL-61 | Event detail panel with artifact link + payload | ✅ | pending | pass | `TimelineEventDetail` |
+| 16.2 | LAL-61 | Empty state guides transform evidence | ✅ | pending | pass | `/cases/:id/timeline` |
+
+## Epic 17 tracker (LAL-22)
+Branch: `epic-17-narrative-and-claim-testing` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 17.1 | LAL-62 | Store claim text, claimant, time, people, source | ✅ | pending | pass | migrations 011 + claim API |
+| 17.1 | LAL-62 | Incomplete submit → 422, form keeps text | ✅ | pending | pass | `Claims.tsx` + Pydantic |
+| 17.1 | LAL-62 | List shows created_at + parse_confidence | ✅ | pending | pass | claims list UI |
+| 17.2 | LAL-63 | Resolution with support/contradiction scores | ✅ | pending | pass | deterministic `claim_resolution_service` |
+| 17.2 | LAL-63 | Insufficient evidence → unresolved + reason | ✅ | pending | pass | no-events path |
+| 17.2 | LAL-63 | Resolution view links supporting/contradicting events | ✅ | pending | pass | `ClaimResolutionPanel` |
 
 ## Epic 10 tracker (LAL-14)
 Branch: `epic-10-bulk-upload-and-categorization` · Merged to main
