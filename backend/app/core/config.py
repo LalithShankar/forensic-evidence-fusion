@@ -30,6 +30,18 @@ class Settings(BaseSettings):
     )
     secret_key: str = Field(default="change-me-in-local-env-only", alias="SECRET_KEY")
     azure_key_vault_url: str | None = Field(default=None, alias="AZURE_KEY_VAULT_URL")
+    cors_allowed_origins: str = Field(
+        default="http://localhost:5173",
+        alias="CORS_ALLOWED_ORIGINS",
+    )
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [
+            origin.strip()
+            for origin in self.cors_allowed_origins.split(",")
+            if origin.strip()
+        ]
 
     @property
     def is_local(self) -> bool:
