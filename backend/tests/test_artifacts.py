@@ -17,7 +17,7 @@ from app.main import app
 from app.models.artifact import Artifact, ArtifactStatus
 from app.models.case import Case, CaseScenarioType
 from app.models.case_membership import CaseAccessLevel, CaseMembership
-from app.services.storage_service import LocalStorageService, StorageError
+from app.services.storage_service import LocalStorageBackend, StorageError
 from tests.test_auth import auth_header, create_test_user
 from tests.test_cases import login_token
 
@@ -32,9 +32,9 @@ def client(
     def override_get_db() -> Generator[Session, None, None]:
         yield db_session
 
-    storage = LocalStorageService(tmp_path)
+    storage = LocalStorageBackend(tmp_path)
 
-    def override_get_storage() -> LocalStorageService:
+    def override_get_storage() -> LocalStorageBackend:
         return storage
 
     app.dependency_overrides[get_db] = override_get_db
@@ -152,7 +152,7 @@ def test_preservation_failure_marks_artifact_failed(
     def fail_preserve(*args: object, **kwargs: object) -> tuple[str, str]:
         raise StorageError("disk full")
 
-    monkeypatch.setattr(LocalStorageService, "preserve_raw", fail_preserve)
+    monkeypatch.setattr(LocalStorageBackend, "preserve_raw", fail_preserve)
 
     response = client.post(
         f"/cases/{case.id}/artifacts/upload",
