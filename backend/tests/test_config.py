@@ -61,6 +61,28 @@ def test_deployed_settings_use_key_vault_contract(
     assert settings.azure_key_vault_url == "https://example.vault.azure.net/"
 
 
+def test_cors_allowed_origins_default_to_local_frontend() -> None:
+    settings = LocalSettings()
+
+    assert settings.cors_origins_list == ["http://localhost:5173"]
+
+
+def test_cors_allowed_origins_parse_comma_separated_env(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    monkeypatch.setenv(
+        "CORS_ALLOWED_ORIGINS",
+        "http://localhost:5173,https://app.example.com",
+    )
+
+    settings = LocalSettings()
+
+    assert settings.cors_origins_list == [
+        "http://localhost:5173",
+        "https://app.example.com",
+    ]
+
+
 def test_get_settings_respects_app_env(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("APP_ENV", "deployed")
     monkeypatch.setenv("AZURE_KEY_VAULT_URL", "https://example.vault.azure.net/")
