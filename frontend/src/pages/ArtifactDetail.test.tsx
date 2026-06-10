@@ -75,10 +75,15 @@ describe("ArtifactDetailPage", () => {
     configureApiClientAuth(() => "test-token");
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({
+      vi.fn().mockImplementation(async (url: string) => ({
         ok: true,
-        json: async () => sampleArtifact,
-      }),
+        json: async () => {
+          if (url.includes("/events")) {
+            return [];
+          }
+          return sampleArtifact;
+        },
+      })),
     );
 
     renderArtifactDetail();

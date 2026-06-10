@@ -187,6 +187,28 @@ export interface StructuredDatasetPreviewPublic {
   total_rows: number | null;
 }
 
+export type ReviewStatus = "pending" | "reviewed" | "disputed";
+
+export interface EvidenceEventPublic {
+  id: string;
+  case_id: string;
+  artifact_id: string;
+  transformation_id: string | null;
+  structured_dataset_id: string | null;
+  event_type: string;
+  event_subtype: string | null;
+  original_timestamp_text: string | null;
+  normalized_timestamp: string | null;
+  title: string | null;
+  description: string | null;
+  payload_json: Record<string, unknown> | null;
+  source_confidence: number;
+  provenance_pointer: string | null;
+  review_status: ReviewStatus;
+  created_at: string;
+  updated_at: string;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -250,6 +272,7 @@ export interface ApiClient {
     artifactId: string,
     datasetId: string,
   ) => Promise<StructuredDatasetPreviewPublic>;
+  listCaseEvents: (caseId: string) => Promise<EvidenceEventPublic[]>;
 }
 
 type TokenProvider = () => string | null;
@@ -563,6 +586,10 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     );
   }
 
+  async function listCaseEvents(caseId: string): Promise<EvidenceEventPublic[]> {
+    return request<EvidenceEventPublic[]>(`/cases/${caseId}/events`);
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -583,6 +610,7 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     fetchReadableContent,
     listStructuredDatasets,
     fetchStructuredDatasetPreview,
+    listCaseEvents,
   };
 }
 

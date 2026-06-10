@@ -15,11 +15,17 @@ from app.core.config import reset_settings_cache
 from app.db.base import Base
 from app.db.session import reset_engine_cache
 from app.models import (  # noqa: F401
+    AnalystNote,
     Artifact,
     AuditLog,
     Case,
     CaseMembership,
+    Claim,
+    ClaimResolution,
+    Entity,
+    EvidenceEvent,
     ReadableView,
+    Report,
     StructuredDataset,
     TransformationRecord,
     User,

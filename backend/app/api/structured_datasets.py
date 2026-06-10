@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import uuid
-from typing import Annotated, Any
+from typing import Annotated
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
@@ -11,17 +11,16 @@ from sqlalchemy.orm import Session
 from app.api.deps import get_storage
 from app.core.auth_deps import get_current_user
 from app.db.session import get_db
-from app.models.structured_dataset import StructuredDataset
 from app.models.user import User
 from app.schemas.structured_dataset import (
     StructuredDatasetPreviewPublic,
     StructuredDatasetPublic,
 )
+from app.services.storage_service import StorageBackend
 from app.services.structured_dataset_service import (
     get_structured_dataset_preview,
     list_structured_datasets,
 )
-from app.services.storage_service import StorageBackend
 
 router = APIRouter(tags=["structured-datasets"])
 
@@ -73,11 +72,11 @@ def get_artifact_structured_dataset_preview(
             detail="Structured dataset not found or inaccessible",
         )
 
-    dataset: StructuredDataset = result["dataset"]  # type: ignore[assignment]
-    preview_rows: list[dict[str, Any]] | None = result.get("preview_rows")  # type: ignore[assignment]
-    preview_json: str | None = result.get("preview_json")  # type: ignore[assignment]
-    truncated: bool = bool(result.get("truncated"))
-    total_rows: int | None = result.get("total_rows")  # type: ignore[assignment]
+    dataset = result["dataset"]
+    preview_rows = result["preview_rows"]
+    preview_json = result["preview_json"]
+    truncated = result["truncated"]
+    total_rows = result["total_rows"]
 
     return StructuredDatasetPreviewPublic(
         dataset_id=dataset.id,

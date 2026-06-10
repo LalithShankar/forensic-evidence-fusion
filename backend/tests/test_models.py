@@ -22,6 +22,14 @@ def test_metadata_loads_without_circular_imports() -> None:
         "artifacts",
         "audit_log",
         "transformation_records",
+        "readable_views",
+        "structured_datasets",
+        "entities",
+        "evidence_events",
+        "claims",
+        "claim_resolutions",
+        "analyst_notes",
+        "reports",
     }
 
 

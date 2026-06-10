@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import uuid
+from typing import Any, TypedDict
 
 from sqlalchemy import select
 from sqlalchemy.orm import Session
@@ -22,6 +23,16 @@ _SCHEMA_VERSION = "1.0"
 _DEFAULT_CONFIDENCE = 0.75
 _MAX_PREVIEW_ROWS = 50
 _MAX_PREVIEW_CHARS = 50_000
+
+
+class StructuredDatasetPreviewResult(TypedDict):
+    """Preview payload returned by get_structured_dataset_preview."""
+
+    dataset: StructuredDataset
+    preview_rows: list[dict[str, Any]] | None
+    preview_json: str | None
+    truncated: bool
+    total_rows: int | None
 
 
 def register_structured_dataset(
@@ -118,7 +129,7 @@ def get_structured_dataset_preview(
     artifact_id: uuid.UUID,
     dataset_id: uuid.UUID,
     storage: StorageBackend,
-) -> StructuredDataset | dict[str, object] | None:
+) -> StructuredDatasetPreviewResult | None:
     """Return dataset plus safe preview payload."""
     if not check_case_access(db, user, case_id, CaseAccessLevel.viewer):
         return None
@@ -131,7 +142,10 @@ def get_structured_dataset_preview(
     if dataset is None or dataset.artifact_id != artifact_id:
         return None
 
-    if dataset.status == StructuredDatasetStatus.failed.value or not dataset.storage_path:
+    if (
+        dataset.status == StructuredDatasetStatus.failed.value
+        or not dataset.storage_path
+    ):
         return {
             "dataset": dataset,
             "preview_rows": None,
