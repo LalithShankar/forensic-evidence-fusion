@@ -7,8 +7,8 @@ _Last updated by: Hybrid EDAP dispatch on 2026-06-10_
 |-------|----------------|--------------|
 | 1     | Epic 1         | merged       |
 | 2     | Epic 2, Epic 3 | merged       |
-| 3     | Epic 4         | **in review** — PR open, CI pending |
-| 4     | Epic 5         | design ready; blocked on Manager approval + Epic 4 |
+| 3     | Epic 4         | merged       |
+| 4     | Epic 5         | **in review** — PR open, CI pending |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -55,19 +55,19 @@ Branch: `epic-3-core-frontend-app-shell` · Merged to main (PR #5)
 | 3.2 | LAL-34 | Frontend .env not tracked in Git | ✅ | merged | pass | `.gitignore` + `git check-ignore` |
 
 ## Epic 4 tracker (LAL-8)
-Branch: `epic-4-database-foundation` · pushed; **PR pending** (create at GitHub) · QA pass (local)
+Branch: `epic-4-database-foundation` · Merged to main (PR #6)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 4.1 | LAL-35 | DATABASE_URL init on backend start | ✅ | open | pass | `app/db/session.py` + lifespan in `main.py` |
-| 4.1 | LAL-35 | Alembic migrations create/update schema | ✅ | open | pass | `alembic/` + `001_initial_schema` migration |
-| 4.1 | LAL-35 | Tests use SQLite, no production credentials | ✅ | open | pass | `tests/conftest.py` + `test_db_session.py` |
-| 4.2 | LAL-36 | users/cases/artifacts placeholder tables | ✅ | open | pass | Alembic migration + ORM models |
-| 4.2 | LAL-36 | SQLAlchemy metadata loads without circular imports | ✅ | open | pass | `app/models/__init__.py` + test_models.py |
-| 4.2 | LAL-36 | Models have required IDs and timestamps | ✅ | open | pass | UUIDPrimaryKeyMixin + TimestampMixin |
-| 4.3 | LAL-37 | audit_log table with required columns | ✅ | open | pass | `app/models/audit.py` + migration |
-| 4.3 | LAL-37 | audit helper writes acting user + target object | ✅ | open | pass | `app/services/audit_service.py` |
-| 4.3 | LAL-37 | Simulated audit creates exactly one row | ✅ | open | pass | `tests/test_audit_service.py` |
+| 4.1 | LAL-35 | DATABASE_URL init on backend start | ✅ | merged | pass | `app/db/session.py` + lifespan in `main.py` |
+| 4.1 | LAL-35 | Alembic migrations create/update schema | ✅ | merged | pass | `alembic/` + `001_initial_schema` migration |
+| 4.1 | LAL-35 | Tests use SQLite, no production credentials | ✅ | merged | pass | `tests/conftest.py` + `test_db_session.py` |
+| 4.2 | LAL-36 | users/cases/artifacts placeholder tables | ✅ | merged | pass | Alembic migration + ORM models |
+| 4.2 | LAL-36 | SQLAlchemy metadata loads without circular imports | ✅ | merged | pass | `app/models/__init__.py` + test_models.py |
+| 4.2 | LAL-36 | Models have required IDs and timestamps | ✅ | merged | pass | UUIDPrimaryKeyMixin + TimestampMixin |
+| 4.3 | LAL-37 | audit_log table with required columns | ✅ | merged | pass | `app/models/audit.py` + migration |
+| 4.3 | LAL-37 | audit helper writes acting user + target object | ✅ | merged | pass | `app/services/audit_service.py` |
+| 4.3 | LAL-37 | Simulated audit creates exactly one row | ✅ | merged | pass | `tests/test_audit_service.py` |
 
 Status key: ❌ not started · ⏳ in progress · ✅ done
 
@@ -77,19 +77,20 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 1 | merged | Repo scaffold, env contract, CI foundation | none |
 | 2026-06-10 | 2 | #4 | FastAPI shell, structured logging, backend tests | STATUS.md |
 | 2026-06-10 | 3 | #5 | React shell, routing, API client | STATUS.md |
-| 2026-06-10 | 4 | open | SQLAlchemy session, Alembic migrations, placeholder models, audit_log | none |
+| 2026-06-10 | 4 | #6 | SQLAlchemy session, Alembic migrations, placeholder models, audit_log | none |
 
-## Epic 5 tracker (LAL-9) — design only
-Branch: not started · **Implementation blocked pending Manager approval**
+## Epic 5 tracker (LAL-9)
+Branch: `epic-5-auth-and-user-access-mvp` · pushed; **PR pending** · QA pass (local)
 
-| Story | Linear | Requirement / criterion | Status | Notes |
-|-------|--------|-------------------------|--------|-------|
-| Design | LAL-9 | Auth design doc produced | ✅ | `docs/design/EPIC_05_design.md` |
-| Design | LAL-9 | Manager approval received | ⏳ | 8 open questions in design doc §10 |
-| 5.1 | — | Local auth MVP | ❌ | blocked on design approval |
-| 5.2 | — | RBAC / access model hooks | ❌ | blocked on design approval |
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 5.1 | LAL-38 | Valid login returns JWT session | ✅ | open | pass | `POST /auth/login` + `auth_service.py` |
+| 5.1 | LAL-38 | Invalid credentials denied safely | ✅ | open | pass | generic 401 message |
+| 5.1 | LAL-38 | Unauthenticated protected routes return 401 | ✅ | open | pass | `/auth/me`, `/auth/protected/ping` |
+| 5.2 | LAL-39 | User model has role/status fields | ✅ | open | pass | `UserRole`, `UserStatus` enums |
+| 5.2 | LAL-39 | Protected endpoints resolve current user | ✅ | open | pass | `get_current_user` dependency |
+| 5.2 | LAL-39 | User ID attachable for audit/logging | ✅ | open | pass | `bind_log_context` + `request.state.user_id` |
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- **Epic 4 (LAL-8):** PR open — awaiting Manager review and CI green.
-- **Epic 5 (LAL-9):** Review and approve `docs/design/EPIC_05_design.md` — see §10 open questions. Implementation waits until Epic 4 merges + design approved.
+- **Epic 5 (LAL-9):** PR open — awaiting Manager review and CI green.

@@ -6,12 +6,17 @@ import uuid
 
 from sqlalchemy.orm import Session
 
+from app.core.security import hash_password
 from app.models import AuditLog, Case, User
 from app.services.audit_service import write_audit_log
 
 
 def test_write_audit_log_persists_acting_user_and_target(db_session: Session) -> None:
-    user = User()
+    user = User(
+        email="audit@local.dev",
+        display_name="Audit User",
+        password_hash=hash_password("DevPassword123!"),
+    )
     case = Case()
     db_session.add_all([user, case])
     db_session.commit()
@@ -39,7 +44,11 @@ def test_write_audit_log_persists_acting_user_and_target(db_session: Session) ->
 
 
 def test_simulated_audited_action_creates_exactly_one_row(db_session: Session) -> None:
-    user = User()
+    user = User(
+        email="audit2@local.dev",
+        display_name="Audit User 2",
+        password_hash=hash_password("DevPassword123!"),
+    )
     db_session.add(user)
     db_session.commit()
 

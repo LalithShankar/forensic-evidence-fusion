@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import Session, sessionmaker
+from sqlalchemy.pool import StaticPool
 
 from app.core.config import reset_settings_cache
 from app.db.base import Base
@@ -41,8 +42,9 @@ def sqlite_database_url(tmp_path: Path) -> str:
 def db_session() -> Generator[Session, None, None]:
     """Provide a SQLAlchemy session backed by an in-memory SQLite database."""
     engine = create_engine(
-        "sqlite:///:memory:",
+        "sqlite://",
         connect_args={"check_same_thread": False},
+        poolclass=StaticPool,
     )
     Base.metadata.create_all(engine)
     session_factory = sessionmaker(autocommit=False, autoflush=False, bind=engine)
