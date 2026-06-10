@@ -21,6 +21,7 @@ dependencies = [
     "uvicorn[standard]>=0.32.0",
     "azure-storage-blob>=12.24.0",
     "azure-search-documents>=11.6.0",
+    "openai>=1.55.0",
 ]
 
 [project.optional-dependencies]

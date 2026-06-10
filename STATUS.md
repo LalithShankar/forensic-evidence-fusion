@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-11 (Epics 16–17 batch — R3 partial, non-Azure half)_
+_Last updated by: Agent on 2026-06-11 (Epics 18–19 batch — R3 closed)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -15,7 +15,8 @@ _Last updated by: Agent on 2026-06-11 (Epics 16–17 batch — R3 partial, non-A
 | 8     | Epic 9         | merged          |
 | 9     | Epic 10, 11, 12 | merged (direct to main) |
 | 10    | Epic 13, 14, 15 | merged (direct to main) — **R2 closed** |
-| 11    | Epic 16, 17    | in review (PRs pending) — **R3 partial (no Azure)** |
+| 11    | Epic 16, 17    | merged (PR #14, #15) — **R3 partial (no Azure)** |
+| 12    | Epic 18, 19    | in review — **R3 closed** (index + assistant) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -96,8 +97,10 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-11 | 13 | `10e2d08` | ReadableView model/API/UI, pipeline registration | none |
 | 2026-06-11 | 14 | `fa3e685` | StructuredDataset model/API/UI, capped preview | none |
 | 2026-06-11 | 15 | `eede05f` | Canonical schema models, normalization, R2 smoke test | none |
-| 2026-06-11 | 16 | pending | Timeline API filters, timeline UI, event detail | none |
-| 2026-06-11 | 17 | pending | Claims CRUD, deterministic resolution, R3 smoke | none |
+| 2026-06-11 | 16 | #14 | Timeline API filters, timeline UI, event detail | none |
+| 2026-06-11 | 17 | #15 | Claims CRUD, deterministic resolution, R3 smoke | none |
+| 2026-06-11 | 18 | pending | Search chunks, pluggable indexing backend, case index API | none |
+| 2026-06-11 | 19 | pending | Evidence-grounded assistant, citations, audit log, R3 assistant smoke | none |
 
 ## Epic 13 tracker (LAL-17)
 Branch: `epic-13-readable-preview-layer` · Merged to main (`10e2d08`)
@@ -135,28 +138,52 @@ Branch: `epic-15-canonical-evidence-schema-integration` · Merged to main (`eede
 | 15.2 | LAL-59 | Weak timestamp preserved with confidence | ✅ | merged | pass | `original_timestamp_text` |
 
 ## Epic 16 tracker (LAL-20)
-Branch: `epic-16-timeline-and-event-workspace` · In review
+Branch: `epic-16-timeline-and-event-workspace` · Merged to main (PR #14)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 16.1 | LAL-60 | Events chronological (normalized_timestamp asc) | ✅ | pending | pass | `event_service.list_timeline_events` |
-| 16.1 | LAL-60 | Filters: event_type, source_group, review_status | ✅ | pending | pass | query params on GET events |
-| 16.1 | LAL-60 | Provenance + artifact_id + source_group in response | ✅ | pending | pass | join Artifact |
-| 16.2 | LAL-61 | Timeline shows date, title, source, confidence, review | ✅ | pending | pass | `TimelineEventList` |
-| 16.2 | LAL-61 | Event detail panel with artifact link + payload | ✅ | pending | pass | `TimelineEventDetail` |
-| 16.2 | LAL-61 | Empty state guides transform evidence | ✅ | pending | pass | `/cases/:id/timeline` |
+| 16.1 | LAL-60 | Events chronological (normalized_timestamp asc) | ✅ | #14 | pass | `event_service.list_timeline_events` |
+| 16.1 | LAL-60 | Filters: event_type, source_group, review_status | ✅ | #14 | pass | query params on GET events |
+| 16.1 | LAL-60 | Provenance + artifact_id + source_group in response | ✅ | #14 | pass | join Artifact |
+| 16.2 | LAL-61 | Timeline shows date, title, source, confidence, review | ✅ | #14 | pass | `TimelineEventList` |
+| 16.2 | LAL-61 | Event detail panel with artifact link + payload | ✅ | #14 | pass | `TimelineEventDetail` |
+| 16.2 | LAL-61 | Empty state guides transform evidence | ✅ | #14 | pass | `/cases/:id/timeline` |
 
 ## Epic 17 tracker (LAL-22)
-Branch: `epic-17-narrative-and-claim-testing` · In review
+Branch: `epic-17-narrative-and-claim-testing` · Merged to main (PR #15)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 17.1 | LAL-62 | Store claim text, claimant, time, people, source | ✅ | pending | pass | migrations 011 + claim API |
-| 17.1 | LAL-62 | Incomplete submit → 422, form keeps text | ✅ | pending | pass | `Claims.tsx` + Pydantic |
-| 17.1 | LAL-62 | List shows created_at + parse_confidence | ✅ | pending | pass | claims list UI |
-| 17.2 | LAL-63 | Resolution with support/contradiction scores | ✅ | pending | pass | deterministic `claim_resolution_service` |
-| 17.2 | LAL-63 | Insufficient evidence → unresolved + reason | ✅ | pending | pass | no-events path |
-| 17.2 | LAL-63 | Resolution view links supporting/contradicting events | ✅ | pending | pass | `ClaimResolutionPanel` |
+| 17.1 | LAL-62 | Store claim text, claimant, time, people, source | ✅ | #15 | pass | migrations 011 + claim API |
+| 17.1 | LAL-62 | Incomplete submit → 422, form keeps text | ✅ | #15 | pass | `Claims.tsx` + Pydantic |
+| 17.1 | LAL-62 | List shows created_at + parse_confidence | ✅ | #15 | pass | claims list UI |
+| 17.2 | LAL-63 | Resolution with support/contradiction scores | ✅ | #15 | pass | deterministic `claim_resolution_service` |
+| 17.2 | LAL-63 | Insufficient evidence → unresolved + reason | ✅ | #15 | pass | no-events path |
+| 17.2 | LAL-63 | Resolution view links supporting/contradicting events | ✅ | #15 | pass | `ClaimResolutionPanel` |
+
+## Epic 18 tracker (LAL-21)
+Branch: `epic-18-azure-ai-search-indexing` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 18.1 | LAL-64 | Chunks with case_id, artifact_id, source_group, provenance | ✅ | pending | pass | `chunk_service.build_chunks_for_artifact` |
+| 18.1 | LAL-64 | Event summary chunks with event_type/event_id metadata | ✅ | pending | pass | optional event chunks |
+| 18.1 | LAL-64 | Source linkage end-to-end | ✅ | pending | pass | `SearchChunk` model |
+| 18.2 | LAL-65 | Deployed → Azure Search upsert when env set | ✅ | pending | pass | `AzureSearchBackend` |
+| 18.2 | LAL-65 | Local/CI → InMemorySearchBackend, no Azure creds | ✅ | pending | pass | `test_indexing.py` |
+| 18.2 | LAL-65 | Index failure → status failed, not falsely indexed | ✅ | pending | pass | `index_status` field |
+
+## Epic 19 tracker (LAL-23)
+Branch: `epic-19-evidence-grounded-ai-assistant` · In review · **R3 gate closed**
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 19.1 | LAL-66 | Indexed case → question retrieves context | ✅ | pending | pass | `assistant_service.ask` |
+| 19.1 | LAL-66 | No relevant evidence → insufficient message | ✅ | pending | pass | MockLLM + search threshold |
+| 19.1 | LAL-66 | Answer includes source references | ✅ | pending | pass | citation verifier |
+| 19.2 | LAL-67 | Sources visible with artifact/event links | ✅ | pending | pass | `SourceReferences.tsx` |
+| 19.2 | LAL-67 | Low confidence → limitation banner | ✅ | pending | pass | `AssistantAnswerPanel` |
+| 19.2 | LAL-67 | Audit log API for recent Q&A | ✅ | pending | pass | `GET .../assistant/logs` |
 
 ## Epic 10 tracker (LAL-14)
 Branch: `epic-10-bulk-upload-and-categorization` · Merged to main

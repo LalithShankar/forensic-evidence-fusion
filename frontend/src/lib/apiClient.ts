@@ -258,6 +258,23 @@ export interface ClaimResolutionPublic {
   updated_at: string;
 }
 
+export interface SourceReferencePublic {
+  chunk_id: string;
+  artifact_id: string;
+  event_id: string | null;
+  provenance_pointer: string | null;
+  source_group: string | null;
+}
+
+export interface AssistantAnswerPublic {
+  answer_text: string;
+  confidence: number;
+  limitation_text: string | null;
+  insufficient_evidence: boolean;
+  source_references: SourceReferencePublic[];
+  log_id: string;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -341,6 +358,10 @@ export interface ApiClient {
     caseId: string,
     claimId: string,
   ) => Promise<ClaimResolutionPublic>;
+  askAssistant: (
+    caseId: string,
+    question: string,
+  ) => Promise<AssistantAnswerPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -726,6 +747,16 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     );
   }
 
+  async function askAssistant(
+    caseId: string,
+    question: string,
+  ): Promise<AssistantAnswerPublic> {
+    return request<AssistantAnswerPublic>(`/cases/${caseId}/assistant/ask`, {
+      method: "POST",
+      body: JSON.stringify({ question }),
+    });
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -754,6 +785,7 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     getClaim,
     resolveClaim,
     getClaimResolution,
+    askAssistant,
   };
 }
 

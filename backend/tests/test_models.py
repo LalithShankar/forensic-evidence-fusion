@@ -31,6 +31,7 @@ def test_metadata_loads_without_circular_imports() -> None:
         "analyst_notes",
         "reports",
         "search_chunks",
+        "assistant_logs",
     }
 
 
