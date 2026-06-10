@@ -16,6 +16,20 @@ git checkout -b epic-<n>-<slug>
 3. Wait for **CI green** on GitHub — PR **auto-merges** (see setup below).
 4. Pull `main` and start the next epic.
 
+## Batch mode — 3 epics, one paste (minimal Manager)
+
+Use when epics are **dependent in a chain** (e.g. 10 → 11 → 12) and you do not want to copy-paste per epic.
+
+| File | Use |
+|------|-----|
+| [batch_10_11_12_pipeline.md](./batch_10_11_12_pipeline.md) | **One paste** → agent runs Phases 1–3 → **3 PRs** (stacked branches) |
+
+**Your job:** paste once, skim **one** combined report at the end. Enable auto-merge on each PR (agent can run `gh pr merge --auto --merge`). Merge order follows dependency (PR #10 before #11 before #12).
+
+**Agent rules:** do not stop for Manager approval between phases unless blocked. Still **one PR per epic** — never one mega-PR.
+
+**Not for:** unrelated epics in parallel (use separate worktrees + separate prompts instead).
+
 ## One-time auto-merge setup (do this once on GitHub)
 
 1. **Enable auto-merge on the repo**  

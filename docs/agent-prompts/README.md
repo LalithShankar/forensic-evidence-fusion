@@ -6,7 +6,8 @@
 |------|-----|
 | [FAST_TRACK.md](./FAST_TRACK.md) | Process: one agent, one PR, auto-merge on CI green |
 | [epic_one_shot_builder.md](./epic_one_shot_builder.md) | Generic template (fill placeholders) |
-| `epic_<NN>_<slug>.md` | **Ready-to-paste** prompt per epic (preferred) |
+| `epic_<NN>_<slug>.md` | **Ready-to-paste** prompt per epic (preferred for single epic) |
+| [batch_10_11_12_pipeline.md](./batch_10_11_12_pipeline.md) | **One paste, 3 epics** — minimal Manager (10 → 11 → 12) |
 
 ## Per-epic prompts (copy → Agent mode)
 
@@ -15,7 +16,8 @@
 | 6 | [epic_06_case_management.md](./epic_06_case_management.md) | merged (reference) |
 | 7 | [epic_07_evidence_upload_and_raw_preservation.md](./epic_07_evidence_upload_and_raw_preservation.md) | merged (reference) |
 | 8 | [epic_08_blob_storage_integration.md](./epic_08_blob_storage_integration.md) | merged (reference) |
-| 9 | [epic_09_artifact_manifest_and_metadata.md](./epic_09_artifact_manifest_and_metadata.md) | **next** |
+| 9 | [epic_09_artifact_manifest_and_metadata.md](./epic_09_artifact_manifest_and_metadata.md) | merged (reference) |
+| 10–12 | [batch_10_11_12_pipeline.md](./batch_10_11_12_pipeline.md) | **current batch** |
 
 ## Legacy multi-role EDAP (optional)
 
@@ -29,12 +31,18 @@
 | [cloud_orchestrator.md](./cloud_orchestrator.md) | Cloud dispatch template |
 | [epic_04_dispatch.md](./epic_04_dispatch.md) | Epic 4 filled example |
 
-## Paste pattern (every epic)
+## Paste patterns
 
+**Single epic:**
 ```text
 Follow @docs/agent-prompts/FAST_TRACK.md
 
 @docs/agent-prompts/epic_09_artifact_manifest_and_metadata.md
 ```
 
-Replace the epic file for each new epic.
+**Batch (3 epics, one session — recommended for 10–12):**
+```text
+Follow @docs/agent-prompts/FAST_TRACK.md
+
+@docs/agent-prompts/batch_10_11_12_pipeline.md
+```
