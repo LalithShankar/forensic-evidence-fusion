@@ -4,7 +4,7 @@ targetScope = 'subscription'
 param environmentName string = 'dev'
 
 @description('Azure region for all resources')
-param location string = resourceGroup().location
+param location string = 'eastus'
 
 @description('PostgreSQL administrator login')
 param postgresAdminLogin string
