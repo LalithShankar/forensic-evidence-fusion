@@ -30,6 +30,7 @@ def test_metadata_loads_without_circular_imports() -> None:
         "claim_resolutions",
         "analyst_notes",
         "reports",
+        "search_chunks",
     }
 
 
