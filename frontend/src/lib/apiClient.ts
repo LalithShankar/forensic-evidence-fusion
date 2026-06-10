@@ -205,8 +205,15 @@ export interface EvidenceEventPublic {
   source_confidence: number;
   provenance_pointer: string | null;
   review_status: ReviewStatus;
+  source_group?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface TimelineEventFilters {
+  event_type?: string;
+  source_group?: string;
+  review_status?: string;
 }
 
 export interface ValidationErrorDetail {
@@ -273,6 +280,14 @@ export interface ApiClient {
     datasetId: string,
   ) => Promise<StructuredDatasetPreviewPublic>;
   listCaseEvents: (caseId: string) => Promise<EvidenceEventPublic[]>;
+  listTimelineEvents: (
+    caseId: string,
+    filters?: TimelineEventFilters,
+  ) => Promise<EvidenceEventPublic[]>;
+  getTimelineEvent: (
+    caseId: string,
+    eventId: string,
+  ) => Promise<EvidenceEventPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -587,7 +602,35 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
   }
 
   async function listCaseEvents(caseId: string): Promise<EvidenceEventPublic[]> {
-    return request<EvidenceEventPublic[]>(`/cases/${caseId}/events`);
+    return listTimelineEvents(caseId);
+  }
+
+  async function listTimelineEvents(
+    caseId: string,
+    filters: TimelineEventFilters = {},
+  ): Promise<EvidenceEventPublic[]> {
+    const params = new URLSearchParams();
+    if (filters.event_type) {
+      params.set("event_type", filters.event_type);
+    }
+    if (filters.source_group) {
+      params.set("source_group", filters.source_group);
+    }
+    if (filters.review_status) {
+      params.set("review_status", filters.review_status);
+    }
+    const query = params.toString();
+    const suffix = query ? `?${query}` : "";
+    return request<EvidenceEventPublic[]>(`/cases/${caseId}/events${suffix}`);
+  }
+
+  async function getTimelineEvent(
+    caseId: string,
+    eventId: string,
+  ): Promise<EvidenceEventPublic> {
+    return request<EvidenceEventPublic>(
+      `/cases/${caseId}/events/${eventId}`,
+    );
   }
 
   return {
@@ -611,6 +654,8 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     listStructuredDatasets,
     fetchStructuredDatasetPreview,
     listCaseEvents,
+    listTimelineEvents,
+    getTimelineEvent,
   };
 }
 
