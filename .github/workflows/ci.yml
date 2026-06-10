@@ -30,6 +30,8 @@ jobs:
         run: mypy app
       - name: Pytest
         run: pytest
+      - name: Validate infra templates
+        run: bash ../scripts/validate_infra.sh
 
   frontend:
     name: frontend

@@ -15,6 +15,7 @@ from app.models.case_membership import CaseAccessLevel
 from app.models.claim import Claim, ClaimResolution
 from app.models.user import User
 from app.schemas.event import EvidenceEventPublic
+from app.services.audit_service import write_audit_log
 from app.services.claim_service import get_claim
 from app.services.event_service import list_timeline_events
 
@@ -42,6 +43,7 @@ def resolve_claim(
     if not events:
         return _upsert_resolution(
             db,
+            user,
             claim,
             result_label="unresolved",
             support_score=0.0,
@@ -54,6 +56,7 @@ def resolve_claim(
     if claim.parse_confidence < 0.4 and not claim.claimed_time_normalized:
         return _upsert_resolution(
             db,
+            user,
             claim,
             result_label="not_testable",
             support_score=0.0,
@@ -93,6 +96,7 @@ def resolve_claim(
     if not supporting and not contradicting:
         return _upsert_resolution(
             db,
+            user,
             claim,
             result_label="unresolved",
             support_score=support_score,
@@ -107,6 +111,7 @@ def resolve_claim(
     result_label = _map_result_label(support_score, contradiction_score)
     return _upsert_resolution(
         db,
+        user,
         claim,
         result_label=result_label,
         support_score=support_score,
@@ -137,6 +142,7 @@ def get_claim_resolution(
 
 def _upsert_resolution(
     db: Session,
+    user: User,
     claim: Claim,
     *,
     result_label: str,
@@ -170,6 +176,20 @@ def _upsert_resolution(
 
     db.commit()
     db.refresh(existing)
+
+    write_audit_log(
+        db,
+        user_id=user.id,
+        action="claim.resolved",
+        object_type="claim",
+        object_id=claim.id,
+        case_id=claim.case_id,
+        after_json={
+            "result_label": existing.result_label,
+            "support_score": existing.support_score,
+            "contradiction_score": existing.contradiction_score,
+        },
+    )
     return existing
 
 

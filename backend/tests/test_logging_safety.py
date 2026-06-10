@@ -124,6 +124,46 @@ def test_request_generates_correlation_id_when_missing() -> None:
     assert response.headers.get("X-Request-ID")
 
 
+def test_pipeline_stage_log_includes_required_fields() -> None:
+    import uuid
+    from unittest.mock import patch
+
+    import app.services.transformation_pipeline as pipeline_module
+
+    with patch.object(pipeline_module._pipeline_logger, "info") as mock_info:
+        pipeline_module._log_stage_transition(
+            stage="classified",
+            artifact_id=uuid.uuid4(),
+            case_id=uuid.uuid4(),
+            duration_ms=5,
+            outcome="running",
+        )
+
+    message = mock_info.call_args[0][0]
+    assert "pipeline_stage" in message
+    assert "outcome=running" in message
+
+
+def test_pipeline_stage_log_warning_on_blocked() -> None:
+    import uuid
+    from unittest.mock import patch
+
+    import app.services.transformation_pipeline as pipeline_module
+
+    with patch.object(pipeline_module._pipeline_logger, "warning") as mock_warning:
+        pipeline_module._log_stage_transition(
+            stage="blocked",
+            artifact_id=uuid.uuid4(),
+            case_id=uuid.uuid4(),
+            duration_ms=50,
+            outcome="blocked",
+            limitation_notes="Unsupported format",
+        )
+
+    message = mock_warning.call_args[0][0]
+    assert "limitation_notes=Unsupported format" in message
+
+
 def test_configure_logging_uses_json_formatter() -> None:
     stream = StringIO()
     configure_logging("info")
