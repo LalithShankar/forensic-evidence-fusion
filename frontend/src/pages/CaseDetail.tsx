@@ -137,6 +137,9 @@ export function CaseDetailPage() {
           <Link asChild display="inline-block" colorPalette="blue">
             <RouterLink to={`/cases/${caseId}/timeline`}>Timeline</RouterLink>
           </Link>
+          <Link asChild display="inline-block" colorPalette="blue">
+            <RouterLink to={`/cases/${caseId}/claims`}>Claims</RouterLink>
+          </Link>
         </Stack>
       </Box>
 

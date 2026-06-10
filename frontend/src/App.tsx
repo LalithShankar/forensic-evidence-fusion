@@ -7,6 +7,7 @@ import { CaseUploadPage } from "./pages/CaseUpload";
 import { ReviewQueuePage } from "./pages/ReviewQueue";
 import { ArtifactDetailPage } from "./pages/ArtifactDetail";
 import { CaseEventsPage } from "./pages/CaseEvents";
+import { ClaimsPage } from "./pages/Claims";
 import { TimelinePage } from "./pages/Timeline";
 import { CasesPage } from "./pages/Cases";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -29,6 +30,7 @@ export default function App() {
             element={<ArtifactDetailPage />}
           />
           <Route path="cases/:caseId/timeline" element={<TimelinePage />} />
+          <Route path="cases/:caseId/claims" element={<ClaimsPage />} />
           <Route path="cases/:caseId/events" element={<CaseEventsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
