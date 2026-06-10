@@ -20,6 +20,7 @@ from app.models import (  # noqa: F401
     Case,
     CaseMembership,
     ReadableView,
+    StructuredDataset,
     TransformationRecord,
     User,
 )
