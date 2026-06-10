@@ -9,7 +9,12 @@ from sqlalchemy.orm import Session
 
 from app.models.artifact import Artifact, ArtifactStatus
 from app.models.user import User
-from app.schemas.artifact import ArtifactMetadataInput
+from app.schemas.artifact import (
+    ArtifactMetadataInput,
+    ArtifactPublic,
+    BulkUploadItemPublic,
+    BulkUploadResponse,
+)
 from app.services import artifact_service
 from app.services.classification_service import classify_artifact
 from app.services.storage_service import StorageBackend
@@ -138,6 +143,27 @@ def bulk_upload_artifacts(
         results=results,
         succeeded_count=succeeded,
         failed_count=failed,
+    )
+
+
+def build_bulk_upload_response(result: BulkUploadResult) -> BulkUploadResponse:
+    """Map an internal bulk upload result to the public API response."""
+    return BulkUploadResponse(
+        upload_batch_id=result.upload_batch_id,
+        succeeded_count=result.succeeded_count,
+        failed_count=result.failed_count,
+        results=[
+            BulkUploadItemPublic(
+                filename=item.filename,
+                artifact=(
+                    ArtifactPublic.model_validate(item.artifact)
+                    if item.artifact is not None
+                    else None
+                ),
+                error=item.error,
+            )
+            for item in result.results
+        ],
     )
 
 

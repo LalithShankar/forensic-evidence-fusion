@@ -16,12 +16,14 @@ from app.models.user import User
 from app.schemas.artifact import (
     ArtifactMetadataInput,
     ArtifactPublic,
-    BulkUploadItemPublic,
     BulkUploadResponse,
 )
 from app.schemas.manifest import CaseArtifactManifest
 from app.services import artifact_service
-from app.services.bulk_upload_service import bulk_upload_artifacts
+from app.services.bulk_upload_service import (
+    build_bulk_upload_response,
+    bulk_upload_artifacts,
+)
 from app.services.manifest_service import build_case_manifest
 from app.services.storage_service import StorageBackend, get_storage_service
 
@@ -150,23 +152,7 @@ async def bulk_upload(
             detail="Case not found",
         )
 
-    return BulkUploadResponse(
-        upload_batch_id=result.upload_batch_id,
-        succeeded_count=result.succeeded_count,
-        failed_count=result.failed_count,
-        results=[
-            BulkUploadItemPublic(
-                filename=item.filename,
-                artifact=(
-                    ArtifactPublic.model_validate(item.artifact)
-                    if item.artifact is not None
-                    else None
-                ),
-                error=item.error,
-            )
-            for item in result.results
-        ],
-    )
+    return build_bulk_upload_response(result)
 
 
 @router.get("/cases/{case_id}/artifacts", response_model=list[ArtifactPublic])
