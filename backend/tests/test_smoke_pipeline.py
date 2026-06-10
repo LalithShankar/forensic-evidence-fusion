@@ -108,9 +108,12 @@ def test_full_pipeline_bulk_review_transform_smoke(
 
     results_by_name = {item["filename"]: item for item in bulk_body["results"]}
     assert results_by_name["ledger.csv"]["artifact"]["status"] == "preserved"
-    assert results_by_name["WhatsApp Chat with Bob.txt"]["artifact"][
-        "suggested_source_family"
-    ] == "WhatsApp"
+    assert (
+        results_by_name["WhatsApp Chat with Bob.txt"]["artifact"][
+            "suggested_source_family"
+        ]
+        == "WhatsApp"
+    )
     assert results_by_name["mystery.bin"]["artifact"]["status"] == "needs_review"
     assert results_by_name["empty.txt"]["error"] is not None
 

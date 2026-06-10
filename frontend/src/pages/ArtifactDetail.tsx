@@ -45,6 +45,16 @@ export function ArtifactDetailPage() {
     enabled: Boolean(caseId && artifactId),
   });
 
+  const eventsQuery = useQuery({
+    queryKey: ["case-events", caseId],
+    queryFn: () => client.listCaseEvents(caseId ?? ""),
+    enabled: Boolean(caseId),
+  });
+
+  const artifactEventCount =
+    eventsQuery.data?.filter((event) => event.artifact_id === artifactId).length ??
+    0;
+
   if (!caseId || !artifactId) {
     return <Text>Missing case or artifact identifier.</Text>;
   }
@@ -115,6 +125,19 @@ export function ArtifactDetailPage() {
             <Text>{artifact.provenance_notes ?? "—"}</Text>
           </Box>
         </Stack>
+      </Box>
+
+      <Box as="section" aria-label="Normalized events">
+        <Heading size="md" mb={4}>
+          Normalized events
+        </Heading>
+        <Text>
+          {artifactEventCount} event{artifactEventCount === 1 ? "" : "s"} from
+          this artifact.{" "}
+          <Link asChild>
+            <RouterLink to={`/cases/${caseId}/events`}>View all case events</RouterLink>
+          </Link>
+        </Text>
       </Box>
 
       <Box as="section" aria-label="Preservation details">

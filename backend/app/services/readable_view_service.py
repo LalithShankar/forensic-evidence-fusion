@@ -122,8 +122,6 @@ def get_readable_view_content(
         text = text[:_MAX_PREVIEW_CHARS] + "\n… [preview truncated]"
 
     content_type = (
-        "application/json"
-        if view.storage_path.endswith(".json")
-        else "text/plain"
+        "application/json" if view.storage_path.endswith(".json") else "text/plain"
     )
     return view, content_type, text, truncated

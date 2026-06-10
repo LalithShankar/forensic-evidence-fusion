@@ -6,6 +6,7 @@ import { CaseDetailPage } from "./pages/CaseDetail";
 import { CaseUploadPage } from "./pages/CaseUpload";
 import { ReviewQueuePage } from "./pages/ReviewQueue";
 import { ArtifactDetailPage } from "./pages/ArtifactDetail";
+import { CaseEventsPage } from "./pages/CaseEvents";
 import { CasesPage } from "./pages/Cases";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/Login";
@@ -26,6 +27,7 @@ export default function App() {
             path="cases/:caseId/artifacts/:artifactId"
             element={<ArtifactDetailPage />}
           />
+          <Route path="cases/:caseId/events" element={<CaseEventsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Route>

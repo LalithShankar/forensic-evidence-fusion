@@ -11,6 +11,8 @@ from sqlalchemy.orm import Session
 from app.core.auth_deps import check_case_access
 from app.models.artifact import Artifact, ArtifactStatus
 from app.models.case_membership import CaseAccessLevel
+from app.models.readable_view import ReadableViewStatus, ReadableViewType
+from app.models.structured_dataset import StructuredDatasetStatus
 from app.models.transformation import (
     TransformationRecord,
     TransformationStage,
@@ -18,13 +20,12 @@ from app.models.transformation import (
 )
 from app.models.user import User
 from app.parsers import csv_parser, json_parser, pdf_parser
-from app.models.readable_view import ReadableViewStatus, ReadableViewType
-from app.models.structured_dataset import StructuredDatasetStatus
 from app.services.audit_service import write_audit_log
+from app.services.normalization_service import normalize_artifact
 from app.services.readable_view_service import register_readable_view
-from app.services.structured_dataset_service import register_structured_dataset
 from app.services.storage_paths import StorageNamespace
 from app.services.storage_service import StorageBackend, StorageError
+from app.services.structured_dataset_service import register_structured_dataset
 
 _STAGE_ORDER: list[TransformationStage] = [
     TransformationStage.preserved,
@@ -138,6 +139,14 @@ def start_transformation(
             storage_path=record.structured_path,
             structured_bytes=parser_output.structured,
             status=StructuredDatasetStatus.generated,
+        )
+        normalize_artifact(
+            db,
+            user,
+            case_id,
+            artifact_id,
+            storage,
+            replace_existing=True,
         )
         db.refresh(record)
 

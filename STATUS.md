@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-11 (Epics 10–12 merged to main)_
+_Last updated by: Agent on 2026-06-11 (Epics 13–15 batch shipped; PRs pending merge)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -14,6 +14,7 @@ _Last updated by: Agent on 2026-06-11 (Epics 10–12 merged to main)_
 | 7     | Epic 8         | merged (PR #12) |
 | 8     | Epic 9         | merged          |
 | 9     | Epic 10, 11, 12 | merged (direct to main) |
+| 10    | Epic 13, 14, 15 | PRs open (stacked branches) — **closes R2** |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -91,6 +92,44 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-11 | 10 | direct | Bulk upload, rule-based classification, batch grouping UI | none |
 | 2026-06-11 | 11 | direct | Review queue API/UI, approve/correct/preserve-only actions | none |
 | 2026-06-11 | 12 | direct | Transformation pipeline MVP, parsers, smoke tests (incl. live curl script) | none |
+| 2026-06-11 | 13 | pending | ReadableView model/API/UI, pipeline registration | none |
+| 2026-06-11 | 14 | pending | StructuredDataset model/API/UI, capped preview | none |
+| 2026-06-11 | 15 | pending | Canonical schema models, normalization, R2 smoke test | none |
+
+## Epic 13 tracker (LAL-17)
+Branch: `epic-13-readable-preview-layer` · PR pending
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 13.1 | LAL-54 | Transformed text → readable preview stored | ✅ | pending | pass | `readable_views` + pipeline hook |
+| 13.1 | LAL-54 | Readable failure → partial/failed status visible | ✅ | pending | pass | failed/blocked registration |
+| 13.2 | LAL-55 | Preview opens in UI | ✅ | pending | pass | `ReadablePreviewPanel` |
+| 13.2 | LAL-55 | Multiple view types selectable | ✅ | pending | pass | view type selector |
+| 13.2 | LAL-55 | No view → clear unavailable state | ✅ | pending | pass | empty-state copy |
+
+## Epic 14 tracker (LAL-18)
+Branch: `epic-14-structured-dataset-generation` · PR pending (stacked on 13)
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 14.1 | LAL-56 | Parser output → StructuredDataset record | ✅ | pending | pass | pipeline + `structured_datasets` |
+| 14.1 | LAL-56 | Metadata: type, row_count, schema_version, confidence | ✅ | pending | pass | API list endpoint |
+| 14.1 | LAL-56 | Storage failure → status not falsely generated | ✅ | pending | pass | `failed` on blocked transform |
+| 14.2 | LAL-57 | Dataset preview shows rows/JSON | ✅ | pending | pass | preview API + UI |
+| 14.2 | LAL-57 | Large dataset → capped preview | ✅ | pending | pass | 50 rows / 50k chars |
+| 14.2 | LAL-57 | Confidence shown in preview | ✅ | pending | pass | `StructuredDatasetPanel` |
+
+## Epic 15 tracker (LAL-19)
+Branch: `epic-15-canonical-evidence-schema-integration` · PR pending (stacked on 14) · **R2 gate**
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 15.1 | LAL-58 | Canonical tables (entity, event, claim stubs) | ✅ | pending | pass | migration `010_canonical_schema` |
+| 15.1 | LAL-58 | Models load without circular imports | ✅ | pending | pass | `test_models.py` |
+| 15.1 | LAL-58 | Provenance + confidence on events | ✅ | pending | pass | `test_canonical_models.py` |
+| 15.2 | LAL-59 | Message-like row → EvidenceEvent | ✅ | pending | pass | `normalization_service` |
+| 15.2 | LAL-59 | Transaction-like row → event + payload | ✅ | pending | pass | `transaction_observed` |
+| 15.2 | LAL-59 | Weak timestamp preserved with confidence | ✅ | pending | pass | `original_timestamp_text` |
 
 ## Epic 10 tracker (LAL-14)
 Branch: `epic-10-bulk-upload-and-categorization` · Merged to main

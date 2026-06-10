@@ -4,17 +4,26 @@ from app.models.artifact import Artifact
 from app.models.audit import AuditLog
 from app.models.case import Case
 from app.models.case_membership import CaseMembership
+from app.models.claim import AnalystNote, Claim, ClaimResolution, Report
+from app.models.entity import Entity
+from app.models.event import EvidenceEvent
 from app.models.readable_view import ReadableView
 from app.models.structured_dataset import StructuredDataset
 from app.models.transformation import TransformationRecord
 from app.models.user import User
 
 __all__ = [
+    "AnalystNote",
     "Artifact",
     "AuditLog",
     "Case",
     "CaseMembership",
+    "Claim",
+    "ClaimResolution",
+    "Entity",
+    "EvidenceEvent",
     "ReadableView",
+    "Report",
     "StructuredDataset",
     "TransformationRecord",
     "User",
