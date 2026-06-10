@@ -1,15 +1,16 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Route, Routes } from "react-router-dom";
 
-import { loadConfig } from "./config";
+import { AppLayout } from "./components/layout/AppLayout";
+import { DashboardPage } from "./pages/DashboardPage";
+import { NotFoundPage } from "./pages/NotFoundPage";
 
 export default function App() {
-  const config = loadConfig();
-
   return (
-    <Box p={8}>
-      <Heading size="lg">Forensic Evidence Fusion</Heading>
-      <Text mt={4}>Environment: {config.appEnv}</Text>
-      <Text>API: {config.apiBaseUrl}</Text>
-    </Box>
+    <Routes>
+      <Route element={<AppLayout />}>
+        <Route index element={<DashboardPage />} />
+        <Route path="*" element={<NotFoundPage />} />
+      </Route>
+    </Routes>
   );
 }
