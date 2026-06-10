@@ -61,4 +61,4 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Merge Epic 2 PR first, then Epic 3 PR (STATUS.md conflict resolved on epic-3 branch).
+- Merge Epic 2 PR first, then Epic 3 PR (STATUS.md conflict resolved on both branches).
