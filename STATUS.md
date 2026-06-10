@@ -55,7 +55,7 @@ Branch: `epic-3-core-frontend-app-shell` · Merged to main (PR #5)
 | 3.2 | LAL-34 | Frontend .env not tracked in Git | ✅ | merged | pass | `.gitignore` + `git check-ignore` |
 
 ## Epic 4 tracker (LAL-8)
-Branch: `epic-4-database-foundation` · PR open · QA pass (local)
+Branch: `epic-4-database-foundation` · pushed; **PR pending** (create at GitHub) · QA pass (local)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
