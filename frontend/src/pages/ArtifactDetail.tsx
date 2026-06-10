@@ -8,6 +8,7 @@ import {
 import { useQuery } from "@tanstack/react-query";
 import { Link as RouterLink, useParams } from "react-router-dom";
 
+import { ReadablePreviewPanel } from "../components/previews/ReadablePreviewPanel";
 import { useAuth } from "../context/AuthContext";
 import type { ArtifactPublic } from "../lib/apiClient";
 
@@ -75,6 +76,9 @@ export function ArtifactDetailPage() {
           {artifact.mime_type} · {artifact.file_size_bytes} bytes ·{" "}
           {formatStatus(artifact.status)}
         </Text>
+        <Box mt={3}>
+          <ReadablePreviewPanel caseId={caseId} artifactId={artifactId} />
+        </Box>
       </Box>
 
       <Box as="section" aria-label="Provenance metadata">

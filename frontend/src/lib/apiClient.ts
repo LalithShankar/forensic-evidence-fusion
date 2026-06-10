@@ -136,6 +136,29 @@ export interface ReviewActionResponse {
   message: string;
 }
 
+export type ReadableViewType = "extracted_text" | "inventory";
+export type ReadableViewStatus = "generated" | "partial" | "failed";
+
+export interface ReadableViewPublic {
+  id: string;
+  artifact_id: string;
+  transformation_id: string | null;
+  view_type: ReadableViewType;
+  storage_path: string | null;
+  status: ReadableViewStatus;
+  error_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ReadableViewContentPublic {
+  view_id: string;
+  view_type: ReadableViewType;
+  content_type: string;
+  content: string;
+  truncated: boolean;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -181,6 +204,15 @@ export interface ApiClient {
     artifactId: string,
     input: ReviewActionInput,
   ) => Promise<ReviewActionResponse>;
+  listReadableViews: (
+    caseId: string,
+    artifactId: string,
+  ) => Promise<ReadableViewPublic[]>;
+  fetchReadableContent: (
+    caseId: string,
+    artifactId: string,
+    viewId: string,
+  ) => Promise<ReadableViewContentPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -456,6 +488,25 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     );
   }
 
+  async function listReadableViews(
+    caseId: string,
+    artifactId: string,
+  ): Promise<ReadableViewPublic[]> {
+    return request<ReadableViewPublic[]>(
+      `/cases/${caseId}/artifacts/${artifactId}/readable-views`,
+    );
+  }
+
+  async function fetchReadableContent(
+    caseId: string,
+    artifactId: string,
+    viewId: string,
+  ): Promise<ReadableViewContentPublic> {
+    return request<ReadableViewContentPublic>(
+      `/cases/${caseId}/artifacts/${artifactId}/readable-views/${viewId}/content`,
+    );
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -472,6 +523,8 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     bulkUploadArtifacts,
     getReviewQueue,
     reviewArtifact,
+    listReadableViews,
+    fetchReadableContent,
   };
 }
 

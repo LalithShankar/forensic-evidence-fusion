@@ -18,7 +18,9 @@ from app.models.transformation import (
 )
 from app.models.user import User
 from app.parsers import csv_parser, json_parser, pdf_parser
+from app.models.readable_view import ReadableViewStatus, ReadableViewType
 from app.services.audit_service import write_audit_log
+from app.services.readable_view_service import register_readable_view
 from app.services.storage_paths import StorageNamespace
 from app.services.storage_service import StorageBackend, StorageError
 
@@ -102,6 +104,14 @@ def start_transformation(
         _advance_stage(record, TransformationStage.readable_generated)
         completed_stages.append(TransformationStage.readable_generated)
         db.commit()
+        register_readable_view(
+            db,
+            artifact_id=artifact_id,
+            transformation_id=record.id,
+            view_type=_readable_view_type(artifact),
+            storage_path=record.readable_path,
+            status=ReadableViewStatus.generated,
+        )
 
         structured_name = _output_filename(
             artifact.original_filename,
@@ -142,6 +152,12 @@ def start_transformation(
         record.limitation_notes = record.limitation_notes or "Transformation blocked."
         db.commit()
         db.refresh(record)
+        _register_readable_on_failure(
+            db,
+            artifact=artifact,
+            record=record,
+            error=str(exc),
+        )
         completed_stages.append(TransformationStage.blocked)
         return record, completed_stages
 
@@ -191,6 +207,46 @@ def _extract_content(artifact: Artifact, raw_bytes: bytes):
 def _output_filename(original_filename: str, suffix_name: str) -> str:
     stem = Path(original_filename).stem or "artifact"
     return f"{stem}_{suffix_name}"
+
+
+def _readable_view_type(artifact: Artifact) -> ReadableViewType:
+    if artifact.artifact_type in {"archive", "zip"} or artifact.file_extension in {
+        "zip",
+        "tar",
+        "gz",
+    }:
+        return ReadableViewType.inventory
+    return ReadableViewType.extracted_text
+
+
+def _register_readable_on_failure(
+    db: Session,
+    *,
+    artifact: Artifact,
+    record: TransformationRecord,
+    error: str,
+) -> None:
+    if record.readable_path:
+        register_readable_view(
+            db,
+            artifact_id=artifact.id,
+            transformation_id=record.id,
+            view_type=_readable_view_type(artifact),
+            storage_path=record.readable_path,
+            status=ReadableViewStatus.partial,
+            error_notes=error,
+        )
+        return
+
+    register_readable_view(
+        db,
+        artifact_id=artifact.id,
+        transformation_id=record.id,
+        view_type=_readable_view_type(artifact),
+        storage_path=None,
+        status=ReadableViewStatus.failed,
+        error_notes=error,
+    )
 
 
 def _stages_up_to(current_stage: str) -> list[TransformationStage]:
