@@ -71,6 +71,33 @@ def test_manifest_includes_all_artifacts_for_case(
     assert filenames == {"a.txt", "b.txt"}
 
 
+def test_manifest_reflects_bulk_upload_classification(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    user = create_test_user(db_session)
+    case = create_case_for_user(db_session, user.id)
+    token = login_token(client, user)
+
+    upload = client.post(
+        f"/cases/{case.id}/artifacts/bulk-upload",
+        headers=auth_header(token),
+        files=[
+            ("files", ("WhatsApp Chat with Bob.txt", b"msg", "text/plain")),
+        ],
+    )
+    assert upload.status_code == 201
+
+    manifest = client.get(
+        f"/cases/{case.id}/artifacts/manifest",
+        headers=auth_header(token),
+    ).json()
+    entry = manifest["artifacts"][0]
+    # High-confidence auto-classification is reflected in the manifest.
+    assert entry["source_group"] == "ThirdParty"
+    assert entry["source_family"] == "WhatsApp"
+
+
 def test_manifest_required_fields_populated_with_defaults(
     client: TestClient,
     db_session: Session,

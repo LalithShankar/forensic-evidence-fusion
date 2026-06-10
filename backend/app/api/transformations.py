@@ -8,7 +8,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
-from app.api.artifacts import get_storage
+from app.api.deps import get_storage
 from app.core.auth_deps import get_current_user
 from app.db.session import get_db
 from app.models.user import User

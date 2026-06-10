@@ -8,8 +8,8 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
 from sqlalchemy.orm import Session
 
+from app.api.deps import get_storage
 from app.core.auth_deps import get_current_user
-from app.core.config import Settings, get_settings
 from app.db.session import get_db
 from app.models.artifact import ArtifactStatus
 from app.models.user import User
@@ -25,15 +25,11 @@ from app.services.bulk_upload_service import (
     bulk_upload_artifacts,
 )
 from app.services.manifest_service import build_case_manifest
-from app.services.storage_service import StorageBackend, get_storage_service
+from app.services.storage_service import StorageBackend
 
 router = APIRouter(tags=["artifacts"])
 
-
-def get_storage(
-    settings: Annotated[Settings, Depends(get_settings)],
-) -> StorageBackend:
-    return get_storage_service(settings)
+__all__ = ["router", "get_storage"]
 
 
 @router.post(

@@ -10,12 +10,62 @@ from unittest.mock import MagicMock
 import pytest
 
 from app.core.config import DeployedSettings, LocalSettings
+from app.services.storage_paths import StorageNamespace
 from app.services.storage_service import (
     AzureBlobStorageBackend,
     LocalStorageBackend,
     StorageError,
     get_storage_service,
 )
+
+
+def test_local_write_output_to_readable_namespace(tmp_path: Path) -> None:
+    backend = LocalStorageBackend(tmp_path)
+    case_id = uuid.uuid4()
+    artifact_id = uuid.uuid4()
+
+    key = backend.write_output(
+        case_id,
+        artifact_id,
+        "report_readable.txt",
+        b"human readable preview",
+        StorageNamespace.readable,
+    )
+
+    assert key.startswith("readable/")
+    assert (tmp_path / key).read_bytes() == b"human readable preview"
+
+
+def test_local_write_output_rejects_empty_content(tmp_path: Path) -> None:
+    backend = LocalStorageBackend(tmp_path)
+    with pytest.raises(StorageError):
+        backend.write_output(
+            uuid.uuid4(),
+            uuid.uuid4(),
+            "empty.json",
+            b"",
+            StorageNamespace.structured,
+        )
+
+
+def test_local_read_raw_round_trip(tmp_path: Path) -> None:
+    backend = LocalStorageBackend(tmp_path)
+    case_id = uuid.uuid4()
+    artifact_id = uuid.uuid4()
+    storage_path, _ = backend.preserve_raw(
+        case_id,
+        artifact_id,
+        "data.csv",
+        b"a,b\n1,2",
+    )
+
+    assert backend.read_raw(storage_path) == b"a,b\n1,2"
+
+
+def test_local_read_raw_missing_file_raises(tmp_path: Path) -> None:
+    backend = LocalStorageBackend(tmp_path)
+    with pytest.raises(StorageError):
+        backend.read_raw("raw/missing/object/file.bin")
 
 
 def test_local_preserve_raw_round_trip(tmp_path: Path) -> None:

@@ -179,6 +179,110 @@ def test_transformation_blocked_stores_failure_notes(
     assert record["current_stage"] == TransformationStage.blocked.value
 
 
+def upload_and_approve(
+    client: TestClient,
+    case_id: uuid.UUID,
+    token: str,
+    *,
+    filename: str,
+    content: bytes,
+    mime: str,
+) -> str:
+    upload = client.post(
+        f"/cases/{case_id}/artifacts/bulk-upload",
+        headers=auth_header(token),
+        files=[("files", (filename, content, mime))],
+    )
+    assert upload.status_code == 201
+    artifact_id = upload.json()["results"][0]["artifact"]["id"]
+    approve = client.patch(
+        f"/cases/{case_id}/review-queue/{artifact_id}",
+        headers=auth_header(token),
+        json={"action": "approve"},
+    )
+    assert approve.status_code == 200
+    return artifact_id
+
+
+def test_json_transformation_generates_readable_and_structured(
+    client: TestClient,
+    db_session: Session,
+    tmp_path: Path,
+) -> None:
+    user = create_test_user(db_session)
+    case = create_case_for_user(db_session, user.id)
+    token = login_token(client, user)
+    artifact_id = upload_and_approve(
+        client,
+        case.id,
+        token,
+        filename="events.json",
+        content=b'{"event":"login","user":"alice"}',
+        mime="application/json",
+    )
+
+    response = client.post(
+        f"/cases/{case.id}/artifacts/{artifact_id}/transformations/start",
+        headers=auth_header(token),
+    )
+    assert response.status_code == 201
+    record = response.json()["record"]
+    assert record["status"] == TransformationStatus.completed.value
+    assert (tmp_path / record["readable_path"]).exists()
+    assert (tmp_path / record["structured_path"]).exists()
+
+
+def test_pdf_transformation_generates_text_preview(
+    client: TestClient,
+    db_session: Session,
+    tmp_path: Path,
+) -> None:
+    user = create_test_user(db_session)
+    case = create_case_for_user(db_session, user.id)
+    token = login_token(client, user)
+    artifact_id = upload_and_approve(
+        client,
+        case.id,
+        token,
+        filename="memo.pdf",
+        content=b"%PDF-1.4 BT (Hello PDF evidence) Tj ET",
+        mime="application/pdf",
+    )
+
+    response = client.post(
+        f"/cases/{case.id}/artifacts/{artifact_id}/transformations/start",
+        headers=auth_header(token),
+    )
+    assert response.status_code == 201
+    record = response.json()["record"]
+    assert record["status"] == TransformationStatus.completed.value
+    readable = (tmp_path / record["readable_path"]).read_text()
+    assert "Hello PDF evidence" in readable
+
+
+def test_transformation_rejects_unready_artifact(
+    client: TestClient,
+    db_session: Session,
+) -> None:
+    user = create_test_user(db_session)
+    case = create_case_for_user(db_session, user.id)
+    token = login_token(client, user)
+
+    upload = client.post(
+        f"/cases/{case.id}/artifacts/bulk-upload",
+        headers=auth_header(token),
+        files=[("files", ("ledger.csv", b"a,b\n1,2", "text/csv"))],
+    )
+    artifact_id = upload.json()["results"][0]["artifact"]["id"]
+
+    # Not approved → still preserved, not ready_for_transformation.
+    response = client.post(
+        f"/cases/{case.id}/artifacts/{artifact_id}/transformations/start",
+        headers=auth_header(token),
+    )
+    assert response.status_code == 404
+
+
 def test_get_latest_transformation_status(
     client: TestClient,
     db_session: Session,
