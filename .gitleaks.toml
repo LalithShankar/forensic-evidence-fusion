@@ -1,0 +1,7 @@
+title = "Forensic Evidence Fusion gitleaks config"
+
+[allowlist]
+description = "Placeholder env examples are tracked intentionally; real .env files are gitignored."
+paths = [
+  '''(?i)\.env\.example$''',
+]
