@@ -31,6 +31,24 @@ class StorageBackend(Protocol):
         """Store bytes unchanged and return storage path/key + SHA-256 hex digest."""
         ...
 
+    def write_output(
+        self,
+        case_id: uuid.UUID,
+        artifact_id: uuid.UUID,
+        original_filename: str,
+        content: bytes,
+        namespace: StorageNamespace,
+    ) -> str:
+        """Write derived readable or structured output; return object key."""
+        ...
+
+    def read_raw(
+        self,
+        storage_path: str,
+    ) -> bytes:
+        """Read preserved raw bytes by storage path/key."""
+        ...
+
 
 class LocalStorageBackend:
     """Write raw artifact bytes to a configured local data directory."""
@@ -75,6 +93,40 @@ class LocalStorageBackend:
 
         digest = hashlib.sha256(content).hexdigest()
         return object_key, digest
+
+    def write_output(
+        self,
+        case_id: uuid.UUID,
+        artifact_id: uuid.UUID,
+        original_filename: str,
+        content: bytes,
+        namespace: StorageNamespace,
+    ) -> str:
+        """Write derived output to readable or structured namespace."""
+        if not content:
+            raise StorageError("Cannot write empty output content")
+
+        object_key = build_object_key(
+            case_id,
+            artifact_id,
+            original_filename,
+            namespace,
+        )
+        destination_file = self._data_root / object_key
+        destination_file.parent.mkdir(parents=True, exist_ok=True)
+        try:
+            destination_file.write_bytes(content)
+        except OSError as exc:
+            raise StorageError("Failed to write derived output") from exc
+        return object_key
+
+    def read_raw(self, storage_path: str) -> bytes:
+        """Read preserved raw bytes from local storage."""
+        source = self._data_root / storage_path
+        try:
+            return source.read_bytes()
+        except OSError as exc:
+            raise StorageError("Failed to read raw artifact") from exc
 
 
 class AzureBlobStorageBackend:
@@ -121,6 +173,45 @@ class AzureBlobStorageBackend:
             raise StorageError("Failed to upload raw artifact to blob storage") from exc
 
         return object_key, digest
+
+    def write_output(
+        self,
+        case_id: uuid.UUID,
+        artifact_id: uuid.UUID,
+        original_filename: str,
+        content: bytes,
+        namespace: StorageNamespace,
+    ) -> str:
+        """Upload derived output to readable or structured namespace."""
+        if not content:
+            raise StorageError("Cannot write empty output content")
+
+        object_key = build_object_key(
+            case_id,
+            artifact_id,
+            original_filename,
+            namespace,
+        )
+        try:
+            blob_client = self._client.get_blob_client(
+                container=self._container_name,
+                blob=object_key,
+            )
+            blob_client.upload_blob(content, overwrite=True)
+        except Exception as exc:
+            raise StorageError("Failed to upload derived output") from exc
+        return object_key
+
+    def read_raw(self, storage_path: str) -> bytes:
+        """Download preserved raw bytes from blob storage."""
+        try:
+            blob_client = self._client.get_blob_client(
+                container=self._container_name,
+                blob=storage_path,
+            )
+            return blob_client.download_blob().readall()
+        except Exception as exc:
+            raise StorageError("Failed to read raw artifact from blob storage") from exc
 
 
 def get_storage_service(settings: Settings | None = None) -> StorageBackend:

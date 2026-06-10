@@ -14,7 +14,14 @@ from sqlalchemy.pool import StaticPool
 from app.core.config import reset_settings_cache
 from app.db.base import Base
 from app.db.session import reset_engine_cache
-from app.models import Artifact, AuditLog, Case, CaseMembership, User  # noqa: F401
+from app.models import (  # noqa: F401
+    Artifact,
+    AuditLog,
+    Case,
+    CaseMembership,
+    TransformationRecord,
+    User,
+)
 
 # Ensure tests never require a production Postgres instance at import time.
 os.environ.setdefault("DATABASE_URL", "sqlite:///:memory:")

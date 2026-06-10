@@ -21,6 +21,7 @@ def test_metadata_loads_without_circular_imports() -> None:
         "case_memberships",
         "artifacts",
         "audit_log",
+        "transformation_records",
     }
 
 
