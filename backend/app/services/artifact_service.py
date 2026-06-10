@@ -11,9 +11,10 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.auth_deps import check_case_access
-from app.models.artifact import Artifact, ArtifactStatus
+from app.models.artifact import PROVENANCE_UNKNOWN, Artifact, ArtifactStatus
 from app.models.case_membership import CaseAccessLevel
 from app.models.user import User
+from app.schemas.artifact import ArtifactMetadataInput, resolve_provenance_field
 from app.services.audit_service import write_audit_log
 from app.services.storage_service import StorageBackend, StorageError
 
@@ -66,6 +67,7 @@ def upload_artifact(
     mime_type: str | None,
     content: bytes,
     storage: StorageBackend,
+    metadata: ArtifactMetadataInput | None = None,
 ) -> Artifact | None:
     """Upload and preserve a raw artifact for an authorized case contributor."""
     if not check_case_access(db, user, case_id, CaseAccessLevel.contributor):
@@ -76,6 +78,7 @@ def upload_artifact(
     if not content:
         raise ValueError("File content is required")
 
+    meta = metadata or ArtifactMetadataInput()
     safe_name, extension = _split_filename(original_filename)
     now = datetime.now(UTC)
 
@@ -88,6 +91,12 @@ def upload_artifact(
         uploaded_by=user.id,
         uploaded_at=now,
         status=ArtifactStatus.pending,
+        source_group=resolve_provenance_field(meta.source_group),
+        source_family=resolve_provenance_field(meta.source_family),
+        artifact_type=resolve_provenance_field(meta.artifact_type),
+        collection_method=resolve_provenance_field(meta.collection_method),
+        parser_class=resolve_provenance_field(meta.parser_class),
+        provenance_notes=meta.provenance_notes,
     )
     db.add(artifact)
     db.flush()
@@ -136,4 +145,10 @@ def _artifact_snapshot(artifact: Artifact) -> dict[str, Any]:
         "file_size_bytes": artifact.file_size_bytes,
         "status": status,
         "content_hash": artifact.content_hash,
+        "source_group": artifact.source_group or PROVENANCE_UNKNOWN,
+        "source_family": artifact.source_family or PROVENANCE_UNKNOWN,
+        "artifact_type": artifact.artifact_type or PROVENANCE_UNKNOWN,
+        "collection_method": artifact.collection_method or PROVENANCE_UNKNOWN,
+        "parser_class": artifact.parser_class or PROVENANCE_UNKNOWN,
+        "provenance_notes": artifact.provenance_notes,
     }

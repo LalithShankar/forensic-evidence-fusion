@@ -43,6 +43,12 @@ const sampleArtifact = {
   uploaded_at: "2026-06-10T10:00:00Z",
   content_hash: "abc123",
   status: "preserved" as const,
+  source_group: "financial",
+  source_family: "bank_statements",
+  artifact_type: "pdf_export",
+  collection_method: "manual_export",
+  parser_class: "direct_structured",
+  provenance_notes: "Portal export",
   created_at: "2026-06-10T10:00:00Z",
   updated_at: "2026-06-10T10:00:00Z",
 };
@@ -90,6 +96,51 @@ describe("CaseUploadPage", () => {
       expect(screen.getByText(/evidence uploaded and preserved/i)).toBeInTheDocument();
     });
     expect(await screen.findByText("report.pdf")).toBeInTheDocument();
+  });
+
+  it("uploads with metadata fields in the form body", async () => {
+    configureApiClientAuth(() => "test-token");
+    const fetchMock = vi
+      .fn()
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [],
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => sampleArtifact,
+      })
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => [sampleArtifact],
+      });
+    vi.stubGlobal("fetch", fetchMock);
+
+    const user = userEvent.setup();
+    renderCaseUpload();
+
+    const uploadSection = screen.getByRole("region", {
+      name: /upload evidence file/i,
+    });
+    const fileInput = within(uploadSection).getByLabelText(/evidence file/i);
+    const file = new File(["pdf-bytes"], "report.pdf", {
+      type: "application/pdf",
+    });
+    await user.upload(fileInput, file);
+    await user.type(screen.getByLabelText(/source group/i), "financial");
+    await user.type(screen.getByLabelText(/provenance notes/i), "Portal export");
+    await user.click(
+      screen.getByRole("button", { name: /upload and preserve/i }),
+    );
+
+    await waitFor(() => {
+      expect(fetchMock).toHaveBeenCalledTimes(3);
+    });
+
+    const uploadCall = fetchMock.mock.calls[1];
+    const body = uploadCall[1]?.body as FormData;
+    expect(body.get("source_group")).toBe("financial");
+    expect(body.get("provenance_notes")).toBe("Portal export");
   });
 
   it("shows an error when upload fails", async () => {

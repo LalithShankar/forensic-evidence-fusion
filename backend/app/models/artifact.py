@@ -6,7 +6,7 @@ import enum
 import uuid
 from datetime import datetime
 
-from sqlalchemy import BigInteger, DateTime, ForeignKey, String
+from sqlalchemy import BigInteger, DateTime, ForeignKey, String, Text
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy.types import Uuid
 
@@ -21,6 +21,9 @@ class ArtifactStatus(enum.StrEnum):
     preserved = "preserved"
     failed = "failed"
     blocked = "blocked"
+
+
+PROVENANCE_UNKNOWN = "unknown"
 
 
 class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
@@ -57,3 +60,29 @@ class Artifact(UUIDPrimaryKeyMixin, TimestampMixin, Base):
         nullable=False,
         default=ArtifactStatus.pending,
     )
+    source_group: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    source_family: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    artifact_type: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    collection_method: Mapped[str] = mapped_column(
+        String(128),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    parser_class: Mapped[str] = mapped_column(
+        String(64),
+        nullable=False,
+        default=PROVENANCE_UNKNOWN,
+    )
+    provenance_notes: Mapped[str | None] = mapped_column(Text, nullable=True)
