@@ -148,6 +148,9 @@ def start_transformation(
             storage,
             replace_existing=True,
         )
+        from app.services.indexing.chunk_service import build_chunks_for_artifact
+
+        build_chunks_for_artifact(db, case_id, artifact_id, storage)
         db.refresh(record)
 
         write_audit_log(

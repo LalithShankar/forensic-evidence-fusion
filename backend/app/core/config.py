@@ -47,6 +47,54 @@ class Settings(BaseSettings):
         default="forensic-evidence",
         alias="AZURE_STORAGE_CONTAINER",
     )
+    azure_search_endpoint: str | None = Field(
+        default=None,
+        alias="AZURE_SEARCH_ENDPOINT",
+    )
+    azure_search_index: str | None = Field(
+        default=None,
+        alias="AZURE_SEARCH_INDEX",
+    )
+    azure_search_api_key: str | None = Field(
+        default=None,
+        alias="AZURE_SEARCH_API_KEY",
+    )
+    azure_openai_endpoint: str | None = Field(
+        default=None,
+        alias="AZURE_OPENAI_ENDPOINT",
+    )
+    azure_openai_api_key: str | None = Field(
+        default=None,
+        alias="AZURE_OPENAI_API_KEY",
+    )
+    azure_openai_chat_deployment: str | None = Field(
+        default=None,
+        alias="AZURE_OPENAI_CHAT_DEPLOYMENT",
+    )
+    azure_openai_embedding_deployment: str | None = Field(
+        default=None,
+        alias="AZURE_OPENAI_EMBEDDING_DEPLOYMENT",
+    )
+    azure_openai_api_version: str = Field(
+        default="2024-02-15-preview",
+        alias="AZURE_OPENAI_API_VERSION",
+    )
+
+    @property
+    def azure_search_configured(self) -> bool:
+        return bool(
+            self.azure_search_endpoint
+            and self.azure_search_index
+            and self.azure_search_api_key
+        )
+
+    @property
+    def azure_openai_configured(self) -> bool:
+        return bool(
+            self.azure_openai_endpoint
+            and self.azure_openai_api_key
+            and self.azure_openai_chat_deployment
+        )
 
     @property
     def cors_origins_list(self) -> list[str]:

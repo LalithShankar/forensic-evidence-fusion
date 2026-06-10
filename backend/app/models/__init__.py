@@ -8,6 +8,7 @@ from app.models.claim import AnalystNote, Claim, ClaimResolution, Report
 from app.models.entity import Entity
 from app.models.event import EvidenceEvent
 from app.models.readable_view import ReadableView
+from app.models.search_chunk import SearchChunk
 from app.models.structured_dataset import StructuredDataset
 from app.models.transformation import TransformationRecord
 from app.models.user import User
@@ -24,6 +25,7 @@ __all__ = [
     "EvidenceEvent",
     "ReadableView",
     "Report",
+    "SearchChunk",
     "StructuredDataset",
     "TransformationRecord",
     "User",

@@ -26,6 +26,7 @@ from app.models import (  # noqa: F401
     EvidenceEvent,
     ReadableView,
     Report,
+    SearchChunk,
     StructuredDataset,
     TransformationRecord,
     User,
