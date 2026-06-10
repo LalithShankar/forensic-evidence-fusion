@@ -54,3 +54,6 @@ warn_unused_ignores = true
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 pythonpath = ["."]
+markers = [
+    "smoke: full pipeline or platform smoke tests (run via pytest -m smoke)",
+]
