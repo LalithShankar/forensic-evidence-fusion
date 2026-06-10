@@ -159,6 +159,34 @@ export interface ReadableViewContentPublic {
   truncated: boolean;
 }
 
+export type StructuredDatasetStatus = "generated" | "failed";
+
+export interface StructuredDatasetPublic {
+  id: string;
+  artifact_id: string;
+  transformation_id: string | null;
+  dataset_type: string;
+  storage_path: string | null;
+  row_count: number | null;
+  schema_version: string;
+  confidence: number;
+  status: StructuredDatasetStatus;
+  error_notes: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface StructuredDatasetPreviewPublic {
+  dataset_id: string;
+  dataset_type: string;
+  confidence: number;
+  row_count: number | null;
+  preview_rows: Record<string, string>[] | null;
+  preview_json: string | null;
+  truncated: boolean;
+  total_rows: number | null;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -213,6 +241,15 @@ export interface ApiClient {
     artifactId: string,
     viewId: string,
   ) => Promise<ReadableViewContentPublic>;
+  listStructuredDatasets: (
+    caseId: string,
+    artifactId: string,
+  ) => Promise<StructuredDatasetPublic[]>;
+  fetchStructuredDatasetPreview: (
+    caseId: string,
+    artifactId: string,
+    datasetId: string,
+  ) => Promise<StructuredDatasetPreviewPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -507,6 +544,25 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     );
   }
 
+  async function listStructuredDatasets(
+    caseId: string,
+    artifactId: string,
+  ): Promise<StructuredDatasetPublic[]> {
+    return request<StructuredDatasetPublic[]>(
+      `/cases/${caseId}/artifacts/${artifactId}/structured-datasets`,
+    );
+  }
+
+  async function fetchStructuredDatasetPreview(
+    caseId: string,
+    artifactId: string,
+    datasetId: string,
+  ): Promise<StructuredDatasetPreviewPublic> {
+    return request<StructuredDatasetPreviewPublic>(
+      `/cases/${caseId}/artifacts/${artifactId}/structured-datasets/${datasetId}/preview`,
+    );
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -525,6 +581,8 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     reviewArtifact,
     listReadableViews,
     fetchReadableContent,
+    listStructuredDatasets,
+    fetchStructuredDatasetPreview,
   };
 }
 

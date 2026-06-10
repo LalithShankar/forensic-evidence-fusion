@@ -19,8 +19,10 @@ from app.models.transformation import (
 from app.models.user import User
 from app.parsers import csv_parser, json_parser, pdf_parser
 from app.models.readable_view import ReadableViewStatus, ReadableViewType
+from app.models.structured_dataset import StructuredDatasetStatus
 from app.services.audit_service import write_audit_log
 from app.services.readable_view_service import register_readable_view
+from app.services.structured_dataset_service import register_structured_dataset
 from app.services.storage_paths import StorageNamespace
 from app.services.storage_service import StorageBackend, StorageError
 
@@ -129,6 +131,14 @@ def start_transformation(
         record.limitation_notes = parser_output.limitation_notes
         completed_stages.append(TransformationStage.structured_generated)
         db.commit()
+        register_structured_dataset(
+            db,
+            artifact=artifact,
+            transformation_id=record.id,
+            storage_path=record.structured_path,
+            structured_bytes=parser_output.structured,
+            status=StructuredDatasetStatus.generated,
+        )
         db.refresh(record)
 
         write_audit_log(
@@ -157,6 +167,15 @@ def start_transformation(
             artifact=artifact,
             record=record,
             error=str(exc),
+        )
+        register_structured_dataset(
+            db,
+            artifact=artifact,
+            transformation_id=record.id,
+            storage_path=record.structured_path,
+            structured_bytes=None,
+            status=StructuredDatasetStatus.failed,
+            error_notes=str(exc),
         )
         completed_stages.append(TransformationStage.blocked)
         return record, completed_stages

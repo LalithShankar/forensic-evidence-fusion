@@ -7,6 +7,7 @@ from app.api.auth import router as auth_router
 from app.api.cases import router as cases_router
 from app.api.review_queue import router as review_queue_router
 from app.api.readable_views import router as readable_views_router
+from app.api.structured_datasets import router as structured_datasets_router
 from app.api.transformations import router as transformations_router
 from app.core.config import Settings, get_settings
 
@@ -17,6 +18,7 @@ api_router.include_router(artifacts_router)
 api_router.include_router(review_queue_router)
 api_router.include_router(transformations_router)
 api_router.include_router(readable_views_router)
+api_router.include_router(structured_datasets_router)
 
 
 @api_router.get("/health")
