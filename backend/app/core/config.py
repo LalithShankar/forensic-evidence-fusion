@@ -39,6 +39,14 @@ class Settings(BaseSettings):
         alias="CORS_ALLOWED_ORIGINS",
     )
     data_root: str = Field(default="./data", alias="DATA_ROOT")
+    azure_storage_connection_string: str | None = Field(
+        default=None,
+        alias="AZURE_STORAGE_CONNECTION_STRING",
+    )
+    azure_storage_container: str = Field(
+        default="forensic-evidence",
+        alias="AZURE_STORAGE_CONTAINER",
+    )
 
     @property
     def cors_origins_list(self) -> list[str]:

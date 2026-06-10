@@ -15,14 +15,14 @@ from app.models.artifact import ArtifactStatus
 from app.models.user import User
 from app.schemas.artifact import ArtifactPublic
 from app.services import artifact_service
-from app.services.storage_service import LocalStorageService, get_storage_service
+from app.services.storage_service import StorageBackend, get_storage_service
 
 router = APIRouter(tags=["artifacts"])
 
 
 def get_storage(
     settings: Annotated[Settings, Depends(get_settings)],
-) -> LocalStorageService:
+) -> StorageBackend:
     return get_storage_service(settings)
 
 
@@ -36,7 +36,7 @@ async def upload_artifact(
     file: Annotated[UploadFile, File(...)],
     current_user: Annotated[User, Depends(get_current_user)],
     db: Annotated[Session, Depends(get_db)],
-    storage: Annotated[LocalStorageService, Depends(get_storage)],
+    storage: Annotated[StorageBackend, Depends(get_storage)],
 ) -> ArtifactPublic:
     """Upload one evidence file to a case and preserve raw bytes locally."""
     content = await file.read()

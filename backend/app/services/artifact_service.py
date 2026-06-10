@@ -15,7 +15,7 @@ from app.models.artifact import Artifact, ArtifactStatus
 from app.models.case_membership import CaseAccessLevel
 from app.models.user import User
 from app.services.audit_service import write_audit_log
-from app.services.storage_service import LocalStorageService, StorageError
+from app.services.storage_service import StorageBackend, StorageError
 
 
 def _split_filename(filename: str) -> tuple[str, str]:
@@ -65,7 +65,7 @@ def upload_artifact(
     original_filename: str,
     mime_type: str | None,
     content: bytes,
-    storage: LocalStorageService,
+    storage: StorageBackend,
 ) -> Artifact | None:
     """Upload and preserve a raw artifact for an authorized case contributor."""
     if not check_case_access(db, user, case_id, CaseAccessLevel.contributor):

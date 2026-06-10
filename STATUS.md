@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Fast Track agent on 2026-06-10 (Epic 7 PR pending)_
+_Last updated by: Agent on 2026-06-10 (Epic 8 PR in review)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -10,7 +10,8 @@ _Last updated by: Fast Track agent on 2026-06-10 (Epic 7 PR pending)_
 | 3     | Epic 4         | merged       |
 | 4     | Epic 5         | merged       |
 | 5     | Epic 6         | merged       |
-| 6     | Epic 7         | **in review** — pushed `b8ab586`, open PR |
+| 6     | Epic 7         | merged (PR #11) |
+| 7     | Epic 8         | in review      |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -82,6 +83,19 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 | 2026-06-10 | 4 | #6 | SQLAlchemy session, Alembic migrations, placeholder models, audit_log | none |
 | 2026-06-10 | 5 | #9 | Local auth MVP with JWT login and protected routes | none |
 | 2026-06-10 | 6 | #10 | Case CRUD APIs, case_memberships migration, membership-based access, case list/detail UI | none |
+| 2026-06-10 | 7 | #11 | Evidence upload API, local raw preservation + SHA-256, CaseUpload UI | none |
+
+## Epic 8 tracker (LAL-12)
+Branch: `epic-8-blob-storage-integration` · PR in review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 8.1 | LAL-44 | APP_ENV=local → local filesystem (or Azurite when connection string set) | ✅ | in review | pass | `StorageBackend` + factory |
+| 8.1 | LAL-44 | APP_ENV=deployed → Azure Blob backend | ✅ | in review | pass | `AzureBlobStorageBackend` |
+| 8.1 | LAL-44 | API/services use abstraction only | ✅ | in review | pass | no direct SDK in routers |
+| 8.2 | LAL-45 | Raw artifacts under raw/ namespace | ✅ | in review | pass | `storage_paths.build_object_key` |
+| 8.2 | LAL-45 | Readable path helper under readable/ namespace | ✅ | in review | pass | `StorageNamespace.readable` |
+| 8.2 | LAL-45 | Structured path helper under structured/ namespace | ✅ | in review | pass | `StorageNamespace.structured` |
 
 ## Epic 5 tracker (LAL-9)
 Branch: `epic-5-auth-and-user-access-mvp` · Merged to main (PR #9)
@@ -108,16 +122,16 @@ Branch: `epic-6-case-management` · Merged to main (PR #10) · QA pass
 | 6.2 | LAL-41 | Missing/inaccessible case → safe not-found state (no info leak) | ✅ | merged | pass | 404 for missing + no membership |
 
 ## Epic 7 tracker (LAL-11)
-Branch: `epic-7-evidence-upload-and-raw-preservation` · commit `b8ab586` pushed · QA pass (local) · PR: open manually (gh CLI unavailable)
+Branch: `epic-7-evidence-upload-and-raw-preservation` · Merged to main (PR #11) · QA pass
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
-| 7.1 | LAL-42 | Upload supported file → Artifact record created | ✅ | pending | pass | `POST /cases/{id}/artifacts/upload` |
-| 7.1 | LAL-42 | Metadata: filename, size, extension, MIME, uploader, upload time | ✅ | pending | pass | `ArtifactPublic` + tests |
-| 7.1 | LAL-42 | Upload failure → no fake completed artifact | ✅ | pending | pass | 400/500; failed status not preserved |
-| 7.2 | LAL-43 | Original file stored unchanged on disk | ✅ | pending | pass | `storage_service.preserve_raw` |
-| 7.2 | LAL-43 | SHA-256 hash stored when preservation completes | ✅ | pending | pass | `content_hash` on artifact |
-| 7.2 | LAL-43 | Preservation failure → status failed/blocked, not completed | ✅ | pending | pass | `test_preservation_failure_marks_artifact_failed` |
+| 7.1 | LAL-42 | Upload supported file → Artifact record created | ✅ | merged | pass | `POST /cases/{id}/artifacts/upload` |
+| 7.1 | LAL-42 | Metadata: filename, size, extension, MIME, uploader, upload time | ✅ | merged | pass | `ArtifactPublic` + tests |
+| 7.1 | LAL-42 | Upload failure → no fake completed artifact | ✅ | merged | pass | 400/500; failed status not preserved |
+| 7.2 | LAL-43 | Original file stored unchanged on disk | ✅ | merged | pass | `storage_service.preserve_raw` |
+| 7.2 | LAL-43 | SHA-256 hash stored when preservation completes | ✅ | merged | pass | `content_hash` on artifact |
+| 7.2 | LAL-43 | Preservation failure → status failed/blocked, not completed | ✅ | merged | pass | `test_preservation_failure_marks_artifact_failed` |
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
