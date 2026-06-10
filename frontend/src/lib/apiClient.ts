@@ -113,6 +113,29 @@ export interface BulkUploadResponse {
   failed_count: number;
 }
 
+export interface ReviewQueueItem {
+  artifact: ArtifactPublic;
+  review_reason: string;
+  suggested_category: string;
+}
+
+export interface ReviewQueueResponse {
+  items: ReviewQueueItem[];
+  total: number;
+}
+
+export interface ReviewActionInput {
+  source_group?: string;
+  source_family?: string;
+  artifact_type?: string;
+  action: "approve" | "preserve_only" | "correct";
+}
+
+export interface ReviewActionResponse {
+  artifact: ArtifactPublic;
+  message: string;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -152,6 +175,12 @@ export interface ApiClient {
     caseId: string,
     files: File[],
   ) => Promise<BulkUploadResponse>;
+  getReviewQueue: (caseId: string) => Promise<ReviewQueueResponse>;
+  reviewArtifact: (
+    caseId: string,
+    artifactId: string,
+    input: ReviewActionInput,
+  ) => Promise<ReviewActionResponse>;
 }
 
 type TokenProvider = () => string | null;
@@ -409,6 +438,24 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     return response.json() as Promise<BulkUploadResponse>;
   }
 
+  async function getReviewQueue(caseId: string): Promise<ReviewQueueResponse> {
+    return request<ReviewQueueResponse>(`/cases/${caseId}/review-queue`);
+  }
+
+  async function reviewArtifact(
+    caseId: string,
+    artifactId: string,
+    input: ReviewActionInput,
+  ): Promise<ReviewActionResponse> {
+    return request<ReviewActionResponse>(
+      `/cases/${caseId}/review-queue/${artifactId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify(input),
+      },
+    );
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -423,6 +470,8 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     getArtifact,
     uploadArtifact,
     bulkUploadArtifacts,
+    getReviewQueue,
+    reviewArtifact,
   };
 }
 

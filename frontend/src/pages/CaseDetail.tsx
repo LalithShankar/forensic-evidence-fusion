@@ -127,9 +127,14 @@ export function CaseDetailPage() {
         <Text mt={2} color="gray.600">
           Scenario: {formatScenarioLabel(caseData.scenario_type)}
         </Text>
-        <Link asChild mt={3} display="inline-block" colorPalette="blue">
-          <RouterLink to={`/cases/${caseId}/upload`}>Upload evidence</RouterLink>
-        </Link>
+        <Stack direction="row" gap={4} mt={3}>
+          <Link asChild display="inline-block" colorPalette="blue">
+            <RouterLink to={`/cases/${caseId}/upload`}>Upload evidence</RouterLink>
+          </Link>
+          <Link asChild display="inline-block" colorPalette="blue">
+            <RouterLink to={`/cases/${caseId}/review`}>Review queue</RouterLink>
+          </Link>
+        </Stack>
       </Box>
 
       <Box as="section" aria-label="Case details">
