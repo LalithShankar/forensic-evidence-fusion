@@ -8,12 +8,19 @@ from sqlalchemy.orm import Session
 
 from app.db.base import Base
 from app.models import Artifact, AuditLog, Case, User
+from app.models.case import CaseScenarioType
 
 
 def test_metadata_loads_without_circular_imports() -> None:
     table_names = set(Base.metadata.tables.keys())
 
-    assert table_names == {"users", "cases", "artifacts", "audit_log"}
+    assert table_names == {
+        "users",
+        "cases",
+        "case_memberships",
+        "artifacts",
+        "audit_log",
+    }
 
 
 def test_placeholder_models_have_ids_and_timestamps(db_session: Session) -> None:
@@ -24,8 +31,15 @@ def test_placeholder_models_have_ids_and_timestamps(db_session: Session) -> None
         display_name="Placeholder User",
         password_hash=hash_password("DevPassword123!"),
     )
-    case = Case()
-    db_session.add_all([user, case])
+    db_session.add(user)
+    db_session.commit()
+    db_session.refresh(user)
+    case = Case(
+        name="Placeholder Case",
+        scenario_type=CaseScenarioType.general_investigation,
+        created_by=user.id,
+    )
+    db_session.add(case)
     db_session.commit()
     db_session.refresh(user)
     db_session.refresh(case)
