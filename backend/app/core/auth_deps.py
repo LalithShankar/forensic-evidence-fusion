@@ -50,14 +50,14 @@ def get_current_user(
 
     try:
         payload = decode_access_token(credentials.credentials, settings)
-        user_id = uuid.UUID(str(payload["sub"]))
+        token_user_id = uuid.UUID(str(payload["sub"]))
     except (jwt.InvalidTokenError, ValueError, KeyError):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated",
         ) from None
 
-    user = auth_provider.get_user_by_id(db, user_id)
+    user = auth_provider.get_user_by_id(db, token_user_id)
     if user is None:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -69,9 +69,9 @@ def get_current_user(
             detail="Account disabled",
         )
 
-    user_id = str(user.id)
-    bind_log_context(user_id=user_id)
-    request.state.user_id = user_id
+    user_id_str = str(user.id)
+    bind_log_context(user_id=user_id_str)
+    request.state.user_id = user_id_str
     return user
 
 
