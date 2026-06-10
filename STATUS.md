@@ -1,12 +1,12 @@
 # Project Status
 
-_Last updated by: EDAP pipeline (Epic 3 Builder/Reviewer/Integration/QA) on 2026-06-10_
+_Last updated by: EDAP Integration (Batch 2 merge conflict resolution) on 2026-06-10_
 
 ## Batch plan
 | Batch | Epics          | State        |
 |-------|----------------|--------------|
-| 1     | Epic 1, Epic 2 | in progress  |
-| 2     | Epic 3         | in progress  |
+| 1     | Epic 1         | merged       |
+| 2     | Epic 2, Epic 3 | in review (parallel) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -23,6 +23,22 @@ Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
 | 1.3 | LAL-29 | CI: frontend lint/type-check/tests | ✅ | merged | pass | eslint, tsc, vitest |
 | 1.3 | LAL-29 | CI: secret scan fails on .env/secrets | ✅ | merged | pass | tracked-.env check + gitleaks job |
 | 1.3 | LAL-29 | main branch protection (PR + checks + approval) | ⏳ | merged | partial | documented in docs/branch-protection.md; GitHub settings pending |
+
+## Epic 2 tracker (LAL-6)
+Branch: `epic-2-core-backend-app-skeleton` · PR: https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-2-core-backend-app-skeleton
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 2.1 | LAL-30 | /health returns status ok | ✅ | open | pass | `api/router.py` + TestClient |
+| 2.1 | LAL-30 | APP_ENV visible in safe non-secret response | ✅ | open | pass | no secret_key/database_url in payload |
+| 2.1 | LAL-30 | Health test passes in pytest | ✅ | open | pass | test_health.py |
+| 2.1 | LAL-30 | CORS allows local frontend origin | ✅ | open | pass | config + middleware + test_health.py |
+| 2.2 | LAL-31 | pytest runs from documented command | ✅ | open | pass | README + pyproject.toml dev extras |
+| 2.2 | LAL-31 | ruff/black/mypy report style errors | ✅ | open | pass | CI + local green |
+| 2.2 | LAL-31 | Deterministic dependency install | ✅ | open | pass | pip install -e ".[dev]" |
+| 2.3 | LAL-32 | Structured logs with correlation/request ID | ✅ | open | pass | JSON formatter + X-Request-ID middleware |
+| 2.3 | LAL-32 | user/case/artifact IDs attached when set | ✅ | open | pass | bind_log_context + formatter test |
+| 2.3 | LAL-32 | Secrets never logged (redaction test) | ✅ | open | pass | test_logging_safety.py |
 
 ## Epic 3 tracker (LAL-7)
 Branch: `epic-3-core-frontend-app-shell` · PR: https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-3-core-frontend-app-shell
@@ -45,4 +61,4 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Epic 3 PR ready for human merge review.
+- Merge Epic 2 PR first, then Epic 3 PR (STATUS.md conflict resolved on epic-3 branch).
