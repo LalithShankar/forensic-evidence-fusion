@@ -1,12 +1,12 @@
 # Project Status
 
-_Last updated by: EDAP pipeline (Builder/Review/Integration/QA) on 2026-06-10_
+_Last updated by: EDAP Integration (Batch 2 merge conflict resolution) on 2026-06-10_
 
 ## Batch plan
 | Batch | Epics          | State        |
 |-------|----------------|--------------|
-| 1     | Epic 1, Epic 2 | Epic 1 merged · Epic 2 in review  |
-| 2     | Epic 3         | blocked (needs 1,2) |
+| 1     | Epic 1         | merged       |
+| 2     | Epic 2, Epic 3 | in review (parallel) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -40,6 +40,18 @@ Branch: `epic-2-core-backend-app-skeleton` · PR: https://github.com/LalithShank
 | 2.3 | LAL-32 | user/case/artifact IDs attached when set | ✅ | open | pass | bind_log_context + formatter test |
 | 2.3 | LAL-32 | Secrets never logged (redaction test) | ✅ | open | pass | test_logging_safety.py |
 
+## Epic 3 tracker (LAL-7)
+Branch: `epic-3-core-frontend-app-shell` · PR: https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-3-core-frontend-app-shell
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 3.1 | LAL-33 | Basic landing/dashboard page loads | ✅ | open | pass | `DashboardPage` + `AppLayout` |
+| 3.1 | LAL-33 | Base routes render without full page reload | ✅ | open | pass | React Router `BrowserRouter` + client nav tests |
+| 3.1 | LAL-33 | Smoke test renders app successfully | ✅ | open | pass | `App.test.tsx` |
+| 3.2 | LAL-34 | VITE_APP_ENV=local reads VITE_API_BASE_URL from .env | ✅ | open | pass | `config.test.ts` with `vi.stubEnv` |
+| 3.2 | LAL-34 | API client health call targets configured backend URL | ✅ | open | pass | `lib/apiClient.ts` + tests |
+| 3.2 | LAL-34 | Frontend .env not tracked in Git | ✅ | open | pass | `.gitignore` + `git check-ignore` |
+
 Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Change log (per merged epic)
@@ -49,4 +61,4 @@ Status key: ❌ not started · ⏳ in progress · ✅ done
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
-- Open Epic 2 PR from [compare link](https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-2-core-backend-app-skeleton) (`gh` not authenticated in agent shell; branch pushed).
+- Merge Epic 2 PR first, then Epic 3 PR (STATUS.md conflict resolved on both branches).
