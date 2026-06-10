@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: EDAP agent on 2026-06-10 (Epic 6 merged)_
+_Last updated by: Fast Track agent on 2026-06-10 (Epic 7 PR pending)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -10,7 +10,7 @@ _Last updated by: EDAP agent on 2026-06-10 (Epic 6 merged)_
 | 3     | Epic 4         | merged       |
 | 4     | Epic 5         | merged       |
 | 5     | Epic 6         | merged       |
-| 6     | Epic 7         | **in review** — PR pending |
+| 6     | Epic 7         | **in review** — pushed `b8ab586`, open PR |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -108,7 +108,7 @@ Branch: `epic-6-case-management` · Merged to main (PR #10) · QA pass
 | 6.2 | LAL-41 | Missing/inaccessible case → safe not-found state (no info leak) | ✅ | merged | pass | 404 for missing + no membership |
 
 ## Epic 7 tracker (LAL-11)
-Branch: `epic-7-evidence-upload-and-raw-preservation` · PR pending · QA pass (local)
+Branch: `epic-7-evidence-upload-and-raw-preservation` · commit `b8ab586` pushed · QA pass (local) · PR: open manually (gh CLI unavailable)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
