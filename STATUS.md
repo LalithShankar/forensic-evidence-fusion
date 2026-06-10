@@ -25,7 +25,7 @@ Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
 | 1.3 | LAL-29 | main branch protection (PR + checks + approval) | ⏳ | merged | partial | documented in docs/branch-protection.md; GitHub settings pending |
 
 ## Epic 3 tracker (LAL-7)
-Branch: `epic-3-core-frontend-app-shell` · PR: pending
+Branch: `epic-3-core-frontend-app-shell` · PR: https://github.com/LalithShankar/forensic-evidence-fusion/compare/main...epic-3-core-frontend-app-shell
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
