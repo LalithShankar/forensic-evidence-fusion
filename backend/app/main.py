@@ -18,6 +18,7 @@ from app.core.logging import (
     configure_logging,
     get_logger,
 )
+from app.core.telemetry import init_telemetry
 from app.db.session import dispose_engine, init_db_connection
 
 _bootstrap_settings = get_settings()
@@ -32,6 +33,7 @@ configure_logging(settings.log_level)
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     """Initialize shared resources on startup and release them on shutdown."""
+    init_telemetry(settings)
     init_db_connection(settings)
     yield
     dispose_engine()

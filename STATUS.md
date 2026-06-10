@@ -1,6 +1,6 @@
 # Project Status
 
-_Last updated by: Agent on 2026-06-11 (Epics 18–19 batch — R3 closed)_
+_Last updated by: Agent on 2026-06-11 (Epics 20–22 batch — R4 closed; final MVP Azure regression pending)_
 
 ## Batch plan
 | Batch | Epics          | State        |
@@ -16,7 +16,8 @@ _Last updated by: Agent on 2026-06-11 (Epics 18–19 batch — R3 closed)_
 | 9     | Epic 10, 11, 12 | merged (direct to main) |
 | 10    | Epic 13, 14, 15 | merged (direct to main) — **R2 closed** |
 | 11    | Epic 16, 17    | merged (PR #14, #15) — **R3 partial (no Azure)** |
-| 12    | Epic 18, 19    | in review — **R3 closed** (index + assistant) |
+| 12    | Epic 18, 19    | merged (PR #16, #17) — **R3 closed** |
+| 13    | Epic 20, 21, 22 | in review — **R4 closed** (report, deploy, ops) |
 
 ## Epic 1 tracker (LAL-5)
 Branch: `epic-1-repo-rules-and-local-dev-foundation` · Merged to main
@@ -162,7 +163,7 @@ Branch: `epic-17-narrative-and-claim-testing` · Merged to main (PR #15)
 | 17.2 | LAL-63 | Resolution view links supporting/contradicting events | ✅ | #15 | pass | `ClaimResolutionPanel` |
 
 ## Epic 18 tracker (LAL-21)
-Branch: `epic-18-azure-ai-search-indexing` · In review
+Branch: `epic-18-azure-ai-search-indexing` · Merged (PR #16)
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
@@ -174,7 +175,7 @@ Branch: `epic-18-azure-ai-search-indexing` · In review
 | 18.2 | LAL-65 | Index failure → status failed, not falsely indexed | ✅ | pending | pass | `index_status` field |
 
 ## Epic 19 tracker (LAL-23)
-Branch: `epic-19-evidence-grounded-ai-assistant` · In review · **R3 gate closed**
+Branch: `epic-19-evidence-grounded-ai-assistant` · Merged (PR #17) · **R3 gate closed**
 
 | Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
 |-------|--------|-------------------------|--------|----|----|-------|
@@ -184,6 +185,38 @@ Branch: `epic-19-evidence-grounded-ai-assistant` · In review · **R3 gate close
 | 19.2 | LAL-67 | Sources visible with artifact/event links | ✅ | pending | pass | `SourceReferences.tsx` |
 | 19.2 | LAL-67 | Low confidence → limitation banner | ✅ | pending | pass | `AssistantAnswerPanel` |
 | 19.2 | LAL-67 | Audit log API for recent Q&A | ✅ | pending | pass | `GET .../assistant/logs` |
+
+## Epic 20 tracker (LAL-24)
+Branch: `epic-20-reporting-and-audit-trail` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 20.1 | LAL-68 | Draft report with timeline, claims, limitations, appendix | ✅ | pending | pass | `report_service.generate_report_draft` |
+| 20.1 | LAL-68 | Regenerate replaces draft in place | ✅ | pending | pass | idempotent MVP |
+| 20.1 | LAL-68 | Audit `report.generated` | ✅ | pending | pass | `write_audit_log` |
+| 20.2 | LAL-69 | Case audit list with filters + pagination | ✅ | pending | pass | `GET /cases/{id}/audit` |
+| 20.2 | LAL-69 | Sensitive JSON redacted | ✅ | pending | pass | `AuditLogPublic.from_audit_row` |
+| 20.2 | LAL-69 | Audit coverage test | ✅ | pending | pass | `test_audit_coverage.py` |
+
+## Epic 21 tracker (LAL-25)
+Branch: `epic-21-deployment-foundation` · In review
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 21.1 | LAL-70 | Bicep templates (Postgres, Storage, KV, CA, SWA, App Insights) | ✅ | pending | pass | `infra/main.bicep` |
+| 21.1 | LAL-70 | `docs/deployment.md` + Dockerfile | ✅ | pending | pass | `scripts/validate_infra.sh` in CI |
+| 21.2 | LAL-71 | Key Vault secret loading when deployed | ✅ | pending | pass | `keyvault.py` + mocked tests |
+| 21.2 | LAL-71 | App Insights connection string in config | ✅ | pending | pass | `applicationinsights_configured` |
+
+## Epic 22 tracker (LAL-26)
+Branch: `epic-22-observability-and-operational-hardening` · In review · **R4 gate closed**
+
+| Story | Linear | Requirement / criterion | Status | PR | QA | Notes |
+|-------|--------|-------------------------|--------|----|----|-------|
+| 22.1 | LAL-72 | Pipeline stage structured logs | ✅ | pending | pass | `transformation_pipeline._log_stage_transition` |
+| 22.1 | LAL-72 | App Insights hook when deployed | ✅ | pending | pass | `telemetry.init_telemetry` no-op local |
+| 22.2 | LAL-73 | `GET /operations/summary` admin/case_manager | ✅ | pending | pass | `operations_service` |
+| 22.2 | LAL-73 | Operations UI + smoke tests | ✅ | pending | pass | `test_smoke_r4_*` |
 
 ## Epic 10 tracker (LAL-14)
 Branch: `epic-10-bulk-upload-and-categorization` · Merged to main
@@ -283,3 +316,4 @@ Branch: `epic-7-evidence-upload-and-raw-preservation` · Merged to main (PR #11)
 
 ## Open questions for the Manager
 - Apply GitHub branch protection on `main` per `docs/branch-protection.md`.
+- **Final MVP regression on live Azure** after procurement (see `docs/deployment.md`).

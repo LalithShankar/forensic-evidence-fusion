@@ -329,6 +329,27 @@ export interface AuditLogFilters {
   offset?: number;
 }
 
+export interface OperationsSummaryPublic {
+  cases_count: number;
+  artifacts: {
+    failed: number;
+    blocked: number;
+    needs_review: number;
+    other: number;
+  };
+  transformations: {
+    running: number;
+    failed: number;
+    blocked: number;
+    completed: number;
+  };
+  search_chunks: {
+    failed: number;
+    pending: number;
+    indexed: number;
+  };
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -426,6 +447,7 @@ export interface ApiClient {
     caseId: string,
     filters?: AuditLogFilters,
   ) => Promise<AuditLogListResponse>;
+  getOperationsSummary: () => Promise<OperationsSummaryPublic>;
 }
 
 type TokenProvider = () => string | null;
@@ -872,6 +894,10 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     return request<AuditLogListResponse>(`/cases/${caseId}/audit${suffix}`);
   }
 
+  async function getOperationsSummary(): Promise<OperationsSummaryPublic> {
+    return request<OperationsSummaryPublic>("/operations/summary");
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -905,6 +931,7 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     listReports,
     getReport,
     listAuditLogs,
+    getOperationsSummary,
   };
 }
 

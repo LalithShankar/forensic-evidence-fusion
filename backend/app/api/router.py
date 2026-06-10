@@ -10,6 +10,7 @@ from app.api.cases import router as cases_router
 from app.api.claims import router as claims_router
 from app.api.events import router as events_router
 from app.api.indexing import router as indexing_router
+from app.api.operations import router as operations_router
 from app.api.readable_views import router as readable_views_router
 from app.api.reports import router as reports_router
 from app.api.review_queue import router as review_queue_router
@@ -31,6 +32,7 @@ api_router.include_router(indexing_router)
 api_router.include_router(assistant_router)
 api_router.include_router(reports_router)
 api_router.include_router(audit_router)
+api_router.include_router(operations_router)
 
 
 @api_router.get("/health")

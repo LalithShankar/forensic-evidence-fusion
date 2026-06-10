@@ -16,6 +16,7 @@ import { CasesPage } from "./pages/Cases";
 import { DashboardPage } from "./pages/DashboardPage";
 import { LoginPage } from "./pages/Login";
 import { NotFoundPage } from "./pages/NotFoundPage";
+import { OperationsPage } from "./pages/Operations";
 
 export default function App() {
   return (
@@ -24,6 +25,7 @@ export default function App() {
       <Route element={<ProtectedRoute />}>
         <Route element={<AppLayout />}>
           <Route index element={<DashboardPage />} />
+          <Route path="operations" element={<OperationsPage />} />
           <Route path="cases" element={<CasesPage />} />
           <Route path="cases/:caseId" element={<CaseDetailPage />} />
           <Route path="cases/:caseId/upload" element={<CaseUploadPage />} />

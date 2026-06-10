@@ -1,4 +1,5 @@
-import { Box, Heading, Text } from "@chakra-ui/react";
+import { Box, Heading, Link, Text } from "@chakra-ui/react";
+import { Link as RouterLink } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import { apiClient } from "../lib/apiClient";
@@ -23,6 +24,9 @@ export function DashboardPage() {
         </Text>
       )}
       {data && <Text mt={4}>Backend status: {data.status}</Text>}
+      <Link asChild mt={6} display="inline-block" colorPalette="blue">
+        <RouterLink to="/operations">Platform operations →</RouterLink>
+      </Link>
     </Box>
   );
 }

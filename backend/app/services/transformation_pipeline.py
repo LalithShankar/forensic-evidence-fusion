@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import time
 import uuid
 from pathlib import Path
 
@@ -9,6 +10,7 @@ from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.core.auth_deps import check_case_access
+from app.core.logging import bind_log_context, get_logger
 from app.models.artifact import Artifact, ArtifactStatus
 from app.models.case_membership import CaseAccessLevel
 from app.models.readable_view import ReadableViewStatus, ReadableViewType
@@ -26,6 +28,8 @@ from app.services.readable_view_service import register_readable_view
 from app.services.storage_paths import StorageNamespace
 from app.services.storage_service import StorageBackend, StorageError
 from app.services.structured_dataset_service import register_structured_dataset
+
+_pipeline_logger = get_logger("app.transformation_pipeline")
 
 _STAGE_ORDER: list[TransformationStage] = [
     TransformationStage.preserved,
@@ -80,6 +84,8 @@ def start_transformation(
     db.refresh(record)
 
     completed_stages: list[TransformationStage] = []
+    bind_log_context(case_id=str(case_id), artifact_id=str(artifact_id))
+    pipeline_started = time.perf_counter()
     try:
         _advance_stage(record, TransformationStage.classified)
         completed_stages.append(TransformationStage.preserved)
@@ -166,6 +172,13 @@ def start_transformation(
                 "status": record.status,
             },
         )
+        _log_stage_transition(
+            stage=TransformationStage.structured_generated.value,
+            artifact_id=artifact_id,
+            case_id=case_id,
+            duration_ms=int((time.perf_counter() - pipeline_started) * 1000),
+            outcome="completed",
+        )
         return record, completed_stages
     except (ValueError, StorageError) as exc:
         record.current_stage = TransformationStage.blocked.value
@@ -190,6 +203,14 @@ def start_transformation(
             error_notes=str(exc),
         )
         completed_stages.append(TransformationStage.blocked)
+        _log_stage_transition(
+            stage=TransformationStage.blocked.value,
+            artifact_id=artifact_id,
+            case_id=case_id,
+            duration_ms=int((time.perf_counter() - pipeline_started) * 1000),
+            outcome="blocked",
+            limitation_notes=record.limitation_notes,
+        )
         return record, completed_stages
 
 
@@ -219,6 +240,35 @@ def get_latest_transformation(
 def _advance_stage(record: TransformationRecord, stage: TransformationStage) -> None:
     record.current_stage = stage.value
     record.status = TransformationStatus.running.value
+    _log_stage_transition(
+        stage=stage.value,
+        artifact_id=record.artifact_id,
+        case_id=record.case_id,
+        duration_ms=0,
+        outcome="running",
+    )
+
+
+def _log_stage_transition(
+    *,
+    stage: str,
+    artifact_id: uuid.UUID,
+    case_id: uuid.UUID,
+    duration_ms: int,
+    outcome: str,
+    limitation_notes: str | None = None,
+) -> None:
+    bind_log_context(case_id=str(case_id), artifact_id=str(artifact_id))
+    message = (
+        f"pipeline_stage stage={stage} artifact_id={artifact_id} "
+        f"case_id={case_id} duration_ms={duration_ms} outcome={outcome}"
+    )
+    if limitation_notes:
+        message = f"{message} limitation_notes={limitation_notes}"
+    if outcome in {"blocked", "failed"}:
+        _pipeline_logger.warning(message)
+    else:
+        _pipeline_logger.info(message)
 
 
 def _extract_content(artifact: Artifact, raw_bytes: bytes):
