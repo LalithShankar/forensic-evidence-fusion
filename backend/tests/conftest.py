@@ -17,6 +17,7 @@ from app.db.session import reset_engine_cache
 from app.models import (  # noqa: F401
     AnalystNote,
     Artifact,
+    AssistantLog,
     AuditLog,
     Case,
     CaseMembership,

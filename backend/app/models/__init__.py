@@ -1,6 +1,7 @@
 """ORM models registered on shared metadata for Alembic autogenerate."""
 
 from app.models.artifact import Artifact
+from app.models.assistant_log import AssistantLog
 from app.models.audit import AuditLog
 from app.models.case import Case
 from app.models.case_membership import CaseMembership
@@ -16,6 +17,7 @@ from app.models.user import User
 __all__ = [
     "AnalystNote",
     "Artifact",
+    "AssistantLog",
     "AuditLog",
     "Case",
     "CaseMembership",

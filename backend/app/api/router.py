@@ -3,6 +3,7 @@
 from fastapi import APIRouter, Depends
 
 from app.api.artifacts import router as artifacts_router
+from app.api.assistant import router as assistant_router
 from app.api.auth import router as auth_router
 from app.api.cases import router as cases_router
 from app.api.claims import router as claims_router
@@ -25,6 +26,7 @@ api_router.include_router(structured_datasets_router)
 api_router.include_router(events_router)
 api_router.include_router(claims_router)
 api_router.include_router(indexing_router)
+api_router.include_router(assistant_router)
 
 
 @api_router.get("/health")
