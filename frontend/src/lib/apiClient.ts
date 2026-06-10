@@ -275,6 +275,60 @@ export interface AssistantAnswerPublic {
   log_id: string;
 }
 
+export interface ReportSectionPublic {
+  key: string;
+  title: string;
+  content: Record<string, unknown>;
+}
+
+export interface ReportDraftPublic {
+  id: string;
+  case_id: string;
+  title: string;
+  status: string;
+  content_json: {
+    version: number;
+    generated_at: string;
+    summary: string;
+    sections: ReportSectionPublic[];
+  } | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface GenerateReportInput {
+  title?: string | null;
+}
+
+export interface AuditLogPublic {
+  audit_id: string;
+  case_id: string | null;
+  user_id: string;
+  action: string;
+  object_type: string;
+  object_id: string;
+  before_json: Record<string, unknown> | null;
+  after_json: Record<string, unknown> | null;
+  timestamp: string;
+  reason: string | null;
+}
+
+export interface AuditLogListResponse {
+  items: AuditLogPublic[];
+  total: number;
+  limit: number;
+  offset: number;
+}
+
+export interface AuditLogFilters {
+  action?: string;
+  object_type?: string;
+  since?: string;
+  until?: string;
+  limit?: number;
+  offset?: number;
+}
+
 export interface ValidationErrorDetail {
   loc: (string | number)[];
   msg: string;
@@ -362,6 +416,16 @@ export interface ApiClient {
     caseId: string,
     question: string,
   ) => Promise<AssistantAnswerPublic>;
+  generateReport: (
+    caseId: string,
+    input?: GenerateReportInput,
+  ) => Promise<ReportDraftPublic>;
+  listReports: (caseId: string) => Promise<ReportDraftPublic[]>;
+  getReport: (caseId: string, reportId: string) => Promise<ReportDraftPublic>;
+  listAuditLogs: (
+    caseId: string,
+    filters?: AuditLogFilters,
+  ) => Promise<AuditLogListResponse>;
 }
 
 type TokenProvider = () => string | null;
@@ -757,6 +821,57 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     });
   }
 
+  async function generateReport(
+    caseId: string,
+    input: GenerateReportInput = {},
+  ): Promise<ReportDraftPublic> {
+    return request<ReportDraftPublic>(`/cases/${caseId}/reports/generate`, {
+      method: "POST",
+      body: JSON.stringify(input),
+    });
+  }
+
+  async function listReports(caseId: string): Promise<ReportDraftPublic[]> {
+    return request<ReportDraftPublic[]>(`/cases/${caseId}/reports`);
+  }
+
+  async function getReport(
+    caseId: string,
+    reportId: string,
+  ): Promise<ReportDraftPublic> {
+    return request<ReportDraftPublic>(
+      `/cases/${caseId}/reports/${reportId}`,
+    );
+  }
+
+  async function listAuditLogs(
+    caseId: string,
+    filters: AuditLogFilters = {},
+  ): Promise<AuditLogListResponse> {
+    const params = new URLSearchParams();
+    if (filters.action) {
+      params.set("action", filters.action);
+    }
+    if (filters.object_type) {
+      params.set("object_type", filters.object_type);
+    }
+    if (filters.since) {
+      params.set("since", filters.since);
+    }
+    if (filters.until) {
+      params.set("until", filters.until);
+    }
+    if (filters.limit !== undefined) {
+      params.set("limit", String(filters.limit));
+    }
+    if (filters.offset !== undefined) {
+      params.set("offset", String(filters.offset));
+    }
+    const query = params.toString();
+    const suffix = query ? `?${query}` : "";
+    return request<AuditLogListResponse>(`/cases/${caseId}/audit${suffix}`);
+  }
+
   return {
     baseUrl,
     fetchHealth,
@@ -786,6 +901,10 @@ export function createApiClient(config: AppConfig = loadConfig()): ApiClient {
     resolveClaim,
     getClaimResolution,
     askAssistant,
+    generateReport,
+    listReports,
+    getReport,
+    listAuditLogs,
   };
 }
 

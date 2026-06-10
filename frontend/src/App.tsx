@@ -8,7 +8,9 @@ import { ReviewQueuePage } from "./pages/ReviewQueue";
 import { ArtifactDetailPage } from "./pages/ArtifactDetail";
 import { CaseEventsPage } from "./pages/CaseEvents";
 import { AssistantPage } from "./pages/Assistant";
+import { AuditLogPage } from "./pages/AuditLog";
 import { ClaimsPage } from "./pages/Claims";
+import { ReportPage } from "./pages/Report";
 import { TimelinePage } from "./pages/Timeline";
 import { CasesPage } from "./pages/Cases";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -33,6 +35,8 @@ export default function App() {
           <Route path="cases/:caseId/timeline" element={<TimelinePage />} />
           <Route path="cases/:caseId/claims" element={<ClaimsPage />} />
           <Route path="cases/:caseId/assistant" element={<AssistantPage />} />
+          <Route path="cases/:caseId/report" element={<ReportPage />} />
+          <Route path="cases/:caseId/audit" element={<AuditLogPage />} />
           <Route path="cases/:caseId/events" element={<CaseEventsPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
